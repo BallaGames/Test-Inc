@@ -1,8 +1,9 @@
-using Heathen.SteamworksIntegration;
+
 using UnityEngine.InputSystem;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     [Header("Movement Configs")]
     [SerializeField] private float walkSpeed = 5.0f;
@@ -26,12 +27,9 @@ public class PlayerMovement : MonoBehaviour
     {
        
     }
-    public void UpdateMovement(UnityEngine.InputSystem.InputAction.CallbackContext callbackContext)
+    public void UpdateMovement(InputAction.CallbackContext callbackContext)
     {
-        if (callbackContext.started)
-        {
-            Debug.Log("started");
-        }
+     
         moveDirection=callbackContext.ReadValue<Vector2>();
 
     }
