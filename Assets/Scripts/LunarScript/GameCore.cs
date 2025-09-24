@@ -14,6 +14,7 @@ namespace Balla.Core
             Core = go.AddComponent<GameCore>();
             PlayerInput.InputManager = go.AddComponent<PlayerInput>();
             InputManager.Initialised();
+            DontDestroyOnLoad(go);
         }
         internal static GameCore Core { get; private set; }
         internal static PlayerInput InputManager => PlayerInput.InputManager;
