@@ -25,7 +25,7 @@ namespace Balla.Input
         public static PlayerInput InputManager;
 
         internal Vector2 moveInput, lookInput;
-
+        internal bool jumpInput, crouchInput, sprintInput, interactInput;
         public float lookSpeed = 15;
 
         public void Initialised()
@@ -34,11 +34,19 @@ namespace Balla.Input
             actions.Enable();
             SubscribeInput(actions.Player.Move, GetMove);
             SubscribeInput(actions.Player.Look, GetLook);
+            SubscribeInput(actions.Player.Jump, GetJump);
+            SubscribeInput(actions.Player.Interact, GetInteract);
+            SubscribeInput(actions.Player.Crouch, GetCrouch);
+            SubscribeInput(actions.Player.Sprint, GetSprint);
         }
         public void Terminate()
         {
             UnsubscribeInput(actions.Player.Move, GetMove);
             UnsubscribeInput(actions.Player.Look, GetLook);
+            UnsubscribeInput(actions.Player.Jump , GetJump);
+            UnsubscribeInput(actions.Player.Interact , GetInteract);
+            UnsubscribeInput(actions.Player.Crouch , GetCrouch);
+            UnsubscribeInput (actions.Player.Sprint , GetSprint);
             actions.Disable();
             actions.Dispose();
         }
@@ -86,6 +94,22 @@ namespace Balla.Input
         {
             //Look input is multiplied by delta time and lookSpeed when obtained
             lookInput = GameCore.TimeMultiplier * Time.deltaTime * lookSpeed * ctx.ReadValue<Vector2>();
+        }
+        public void GetInteract(InputAction.CallbackContext ctx)
+        {
+            interactInput = ctx.ReadValueAsButton();
+        }
+        public void GetCrouch(InputAction.CallbackContext ctx)
+        {
+            crouchInput = ctx.ReadValueAsButton();
+        }
+        public void GetJump(InputAction.CallbackContext ctx)
+        {
+            jumpInput = ctx.ReadValueAsButton();
+        }
+        public void GetSprint(InputAction.CallbackContext ctx)
+        {
+            sprintInput = ctx.ReadValueAsButton();
         }
 
         #endregion

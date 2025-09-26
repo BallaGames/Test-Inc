@@ -21,7 +21,12 @@ namespace Balla.Gameplay.Player
     public class PlayerController : BallaScript, IBallaMessages
     {
         [SerializeField] internal Rigidbody rb;
+        [SerializeField] internal CapsuleCollider capsule;
 
+        [SerializeField, ReadOnly, Tooltip("Obtained from Camera.Main if this player is the local authority.")] internal Transform cam;
+        [SerializeField, Tooltip("Where to move the camera to when updating the player.")] internal Transform camTargetPoint;
+        protected Vector3 _camPosOld;
+        protected Quaternion _camRotOld;
 
         [SerializeField, Tooltip("The transform moved when the player crouches")] internal Transform crouchTransform;
 
@@ -71,6 +76,13 @@ namespace Balla.Gameplay.Player
         [SerializeField, Tooltip("")]
         protected float baseAirDamping;
         #endregion
+        #region
+        [SerializeField, Tooltip("")]
+        protected float jumpSpeed;
+        [SerializeField, Tooltip("")]
+        protected float jumpCooldown;
+        protected float currJumpCD;
+        #endregion
         #region Slide
         [Header("Sliding")]
         /// <summary>
@@ -91,27 +103,45 @@ namespace Balla.Gameplay.Player
         [SerializeField, Tooltip("")] protected float slideCutoffSpeed;
         #endregion
         #region Crouch
-        [Header("Crouching")]
+        /// <summary>
+        /// Is the player currently crouching?
+        /// </summary>
+        [Header("Crouching"), ReadOnly, SerializeField, Tooltip("Is the player currently crouched?")]
+        internal bool isCrouching;
+        /// <summary>
+        /// How crouched the player is. This value moves between 0 and 1 when the player is crouching or uncrouching.
+        /// </summary>
+        internal float currentCrouch;
         /// <summary>
         /// The height of the player's head when standing, in local space. Crouching interpolates between this and <see cref="crouchHeadHeight"/>
         /// </summary>
         [SerializeField, Tooltip("The height of the player's aimTransform when standing, in local space.")] protected float standHeadHeight;
         /// <summary>
-        /// The height of the player's head when standing, in local space. Crouching interpolates between this and <see cref="standHeadHeight"/>
+        /// How much shorter the player gets when crouching.
+        /// <br></br>This is subtracted from <see cref="standHeadHeight"/>
         /// </summary>
-        [SerializeField, Tooltip("The height of the player's aimTransform when crouched, in local space.")] protected float crouchHeadHeight;
+        [SerializeField, Tooltip("The height of the player's aimTransform when crouched, in local space.")] protected float crouchShrinkFactor;
+        /// <summary>
+        /// The height of the player while crouching.
+        /// </summary>
+        [SerializeField, ReadOnly, Tooltip("The height of the player's aimTransform when crouched, in local space.")] protected float crouchHeadHeight;
         /// <summary>
         /// How long it takes for the player's head and capsule to lerp towards the target. Higher values here make you crouch slower.
         /// </summary>
         [SerializeField, Tooltip("How long crouching takes.")] protected float crouchTime;
+        protected float crouchIncrement;
         /// <summary>
         /// How tall the player's capsule is when standing. Try to account for this in the stand height.
         /// </summary>
         [SerializeField, Tooltip("How tall the player's capsule is when standing.")] protected float standCapsuleHeight;
         /// <summary>
+        /// How much the player's capsule shrinks when they crouch
+        /// </summary>
+        [SerializeField, Tooltip("How tall the player's capsule is when crouching.")] protected float capsuleCrouchShrink;
+        /// <summary>
         /// How tall the player's capsule is when crouching
         /// </summary>
-        [SerializeField, Tooltip("How tall the player's capsule is when crouching.")] protected float crouchCapsuleHeight;
+        [SerializeField, ReadOnly, Tooltip("How tall the player's capsule is when crouching.")] protected float crouchCapsuleHeight;
         /// <summary>
         /// How high the player's capsule is placed when standing. 
         /// <br></br>This uses <see cref="Vector3.up"/> * this value to determine the value.
@@ -121,7 +151,7 @@ namespace Balla.Gameplay.Player
         /// How high the player's capsule is placed when crouching. 
         /// <br></br>This uses <see cref="Vector3.up"/> * this value to determine the value.
         /// </summary>
-        [SerializeField, Tooltip("How high the player's capsule is placed when crouching")] protected float crouchCapsulePosition;
+        [SerializeField, ReadOnly, Tooltip("How high the player's capsule is placed when crouching")] protected float crouchCapsulePosition;
         #endregion
         #region Grounding
         /// <summary>
@@ -193,6 +223,12 @@ namespace Balla.Gameplay.Player
         private void Start()
         {
             ConfigureGroundCheckPositions();
+
+            //Replace with Owner check later.
+            if (true)
+            {
+                cam = Camera.main.transform;
+            }
         }
 
         private void OnValidate()
@@ -213,6 +249,20 @@ namespace Balla.Gameplay.Player
                 }
             }
             _maxSpringLength = groundSpringRestLength + groundSpringTravel;
+            if(capsule != null)
+            {
+                standCapsuleHeight = capsule.height;
+                standCapsulePosition = capsule.center.y;
+
+                crouchCapsuleHeight = standCapsuleHeight - capsuleCrouchShrink;
+                crouchCapsulePosition = standCapsulePosition - capsuleCrouchShrink / 2;
+            }
+            if(aimTransform != null)
+            {
+                standHeadHeight = aimTransform.localPosition.y;
+                crouchHeadHeight = standHeadHeight - crouchShrinkFactor;
+            }
+            crouchIncrement = (1 / crouchTime);
         }
         void ConfigureGroundCheckPositions()
         {
@@ -245,16 +295,17 @@ namespace Balla.Gameplay.Player
         #region LunarScript Overrides
         protected override void Timestep()
         {
-            CheckGround();
+            if(currJumpCD >= jumpCooldown)
+            {
+                CheckGround();
+            }
             HandleMotion();
         }
         protected override void AfterFrame()
         {
             base.AfterFrame();
-            if(Input.lookInput != Vector2.zero)
-            {
-                Look();
-            }
+            Look();
+            UpdateCamera();
         }
 
 
@@ -339,7 +390,9 @@ namespace Balla.Gameplay.Player
         /// </summary>
         protected void HandleMotion()
         {
+            Crouch();
             SimpleMove();
+            TryJump();
         }
         /// <summary>
         /// Performs a variety of calculations to determine how the player should move when they are on a surface that also moves.
@@ -407,7 +460,7 @@ namespace Balla.Gameplay.Player
         /// <br></br> F = m * (w^2 / r) - and we have access to all (or most) of this information by some means or another.
         /// 
         /// </summary>
-        void CalculateCentripetalForce()
+        protected void CalculateCentripetalForce()
         {
 
             //Lets think about this a little more abstract. We are, in essence, just moving point B around point A, at a distance R.
@@ -433,7 +486,6 @@ namespace Balla.Gameplay.Player
             //then apply the force. I'll also add a multiplier in case it isn't *quite* physically accurate. 
             rb.AddForce(F * surfaceMotionCentripetalMultiplier * forceDir);
         }
-
         #region Movement Methods
         /// <summary>
         /// This method applies forces to the player when they are walking (or some variation thereof) or airborne.
@@ -454,7 +506,7 @@ namespace Balla.Gameplay.Player
                 {
                     //Integrate walk/crouch/sprint later
                     moveRight = Input.moveInput.x * strafeForce * slopeRight;
-                    moveForward = Input.moveInput.y * ((Input.moveInput.y > 0 ? forwardForce : backForce)) * slopeForward;
+                    moveForward = Input.moveInput.y * (Input.moveInput.y > 0 ? forwardForce : backForce) * slopeForward;
                     rb.AddForce((moveForward + moveRight) * forceMult);
                 }
 
@@ -471,10 +523,31 @@ namespace Balla.Gameplay.Player
         protected void Crouch()
         {
 
-        }
-        protected void Jump()
-        {
+            isCrouching = Input.crouchInput;
 
+            //If trying to crouch, we should move towards 1. If trying to stand, we should move towards 0.
+            int _crouchtarget = isCrouching ? 1 : 0;
+            if(currentCrouch != (isCrouching ? 1 : 0))
+            {
+                currentCrouch = Mathf.MoveTowards(currentCrouch, _crouchtarget, crouchIncrement * Delta);
+                capsule.height = Mathf.Lerp(standCapsuleHeight, crouchCapsuleHeight, currentCrouch);
+                capsule.center = Vector3.up * Mathf.Lerp(standCapsulePosition, crouchCapsulePosition, currentCrouch);
+                aimTransform.localPosition = Vector3.up * Mathf.Lerp(standHeadHeight, crouchHeadHeight, currentCrouch);
+            }
+        }
+        protected void TryJump()
+        {
+            if (isGrounded && currJumpCD >= jumpCooldown && Input.jumpInput)
+            {
+                rb.AddForce(transform.up * (jumpSpeed + Mathf.Clamp(rb.linearVelocity.y, -4, 0)), ForceMode.VelocityChange);
+                isGrounded = false;
+                Input.jumpInput = false;
+                currJumpCD = 0;
+            }
+            if(currJumpCD < jumpCooldown)
+            {
+                currJumpCD += Delta;
+            }
         }
         #endregion
 
@@ -490,11 +563,36 @@ namespace Balla.Gameplay.Player
         /// </summary>
         protected void Look()
         {
+            if (Input.lookInput == Vector2.zero)
+                return;
             float oldPitch = pitch;
             pitch = Mathf.Clamp(pitch + Input.lookInput.y, -89.5f, 89.5f);
             lookDelta = new(Input.lookInput.x, pitch - oldPitch);
             rotationRoot.localRotation *= Quaternion.Euler(0, lookDelta.x, 0);
             aimTransform.localRotation = Quaternion.Euler(-pitch, 0, 0);
+        }
+        protected void UpdateCamera()
+        {
+            bool posUpdate = _camPosOld != camTargetPoint.position;
+            bool rotUpdate = _camRotOld != camTargetPoint.rotation;
+            
+            if(posUpdate && rotUpdate)
+            {
+                cam.transform.SetPositionAndRotation(camTargetPoint.position, camTargetPoint.rotation);
+            }
+            else
+            {
+                if (posUpdate)
+                {
+                    cam.transform.position = camTargetPoint.position;
+                }
+                if (rotUpdate)
+                {
+                    cam.transform.rotation = camTargetPoint.rotation;
+                }
+            }
+            _camPosOld = camTargetPoint.position;
+            _camRotOld = camTargetPoint.rotation;
         }
         #endregion Non-motion
     }
