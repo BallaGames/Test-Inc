@@ -3,6 +3,7 @@ using UnityEngine;
 using Balla.Core;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem.XR.Haptics;
 namespace Balla.Gameplay.Player
 {
     public enum MovementState
@@ -102,25 +103,6 @@ namespace Balla.Gameplay.Player
         protected int airJumpCount;
         protected float currJumpCD;
         #endregion
-        #region Slide
-        [Header("Sliding")]
-        /// <summary>
-        /// 
-        /// </summary>
-        [SerializeField, Tooltip("")] protected float slideStartSpeed;
-        /// <summary>
-        /// 
-        /// </summary>
-        [SerializeField, Tooltip("")] protected float slideSteerForce;
-        /// <summary>
-        /// 
-        /// </summary>
-        [SerializeField, Tooltip("")] protected float slideDamping;
-        /// <summary>
-        /// 
-        /// </summary>
-        [SerializeField, Tooltip("")] protected float slideCutoffSpeed;
-        #endregion
         #region Crouch
         /// <summary>
         /// Is the player currently crouching?
@@ -216,6 +198,8 @@ namespace Balla.Gameplay.Player
         protected Vector3[] _springPos, _springHitPos;
         protected float[] _springLengths;
         protected RaycastHit[] groundHits;
+
+        bool sliding;
 
         Vector3 slopeForward, slopeForwardFull, slopeRight, slopeRightFull, slopeDirection;
         Vector3 dampRight, dampForward, moveForward, moveRight;
@@ -428,8 +412,37 @@ namespace Balla.Gameplay.Player
         /// </summary>
         protected void CheckMoveState()
         {
+            //We need to figure out what our current move state is.
+            //We can only override it if we don't currently have a special MoveState
+            if (moveState == MovementState.Special)
+                return;
 
+            if (isClimbing)
+            {
+                //If we're climbing, this will override everything else.
+                moveState = MovementState.Mantle;
+                return;
+            }
+            if (isGrounded)
+            {
+                if (isCrouching)
+                {
+                    moveState = MovementState.Crouch;
+                    return;
+                }
+                if (Input.Sprint && Input.Move.y >= 0.7f)
+                {
+                    moveState = MovementState.Sprint;
+                    return;
+                }
+                moveState = MovementState.Walk;
+            }
+            else
+            {
+                moveState = MovementState.Air;
+            }
         }
+
 
         /// <summary>
         /// Called within <see cref="CheckGround"/>, TransformSurfaceNormal calculates all the variations of the surface normal that the player may need.
@@ -470,7 +483,26 @@ namespace Balla.Gameplay.Player
                 CheckClimb();
             }
             CheckMoveState();
-            SimpleMove();
+
+            switch (moveState)
+            {
+                case MovementState.None:
+                    break;
+                case MovementState.Walk or MovementState.Crouch or MovementState.Sprint or MovementState.Air:
+                    SimpleMove();
+                    break;
+                case MovementState.Ladder:
+                    //We'll later do the climb stuff
+                    break;
+                case MovementState.Mantle:
+                    //Exclude movement logic if we're currently climbing
+                    break;
+                case MovementState.Special:
+                    //Ignore movement logic if this is overridden. We'll look at doing something with this later on.
+                    break;
+                default:
+                    break;
+            }
             TryJump();
         }
         void CheckClimb()
@@ -488,18 +520,20 @@ namespace Balla.Gameplay.Player
             }
             //Leave early if we don't hit here.
             Vector3 fwdPoint = climbCastOrigin.position + (transform.forward * (capsule.radius + hitFwd.distance));
-            //Now we should cast up to see if we have enough space to stand in the spot in front of us.
-            Debug.DrawRay(fwdPoint - (transform.up * climbBlockHeightOffset), transform.up * (maxClimbHeight - climbBlockHeightOffset), Color.mediumPurple * maxClimbDistance, 2);
-            if (Physics.Raycast(fwdPoint - (transform.up * climbBlockHeightOffset), transform.up, out RaycastHit hitUp, maxClimbHeight - climbBlockHeightOffset, groundMask) && (hitUp.distance - climbBlockHeightOffset) < climbSpaceToCrouch)
-            {
-                Debug.Log("Climb obstructed! not enough space!");
-                return;
-            }
+
             //Return if this one does not hit OR if we don't have enough space to stand/crouch here.
             Debug.DrawRay(fwdPoint + (transform.up * (maxClimbHeight + 0.05f)), -transform.up * (maxClimbHeight + 0.05f), Color.orange, 2);
             if (!Physics.Raycast(fwdPoint + (transform.up * (maxClimbHeight + 0.05f)), -transform.up, out RaycastHit hitDown, maxClimbHeight + 0.05f, groundMask) || hitDown.distance <= 0.04f)
             {
                 Debug.Log("No surface to climb on OR the climb is too high up!! Is this check overlapping?");
+                return;
+            }
+
+            //Now we should cast up to see if we have enough space to stand in the spot in front of us.
+            Debug.DrawRay(hitDown.point - (transform.up * climbBlockHeightOffset), transform.up * (maxClimbHeight - climbBlockHeightOffset), Color.mediumPurple * maxClimbDistance, 2);
+            if (Physics.Raycast(hitDown.point - (transform.up * climbBlockHeightOffset), transform.up, out RaycastHit hitUp, maxClimbHeight - climbBlockHeightOffset, groundMask) && (hitUp.distance - climbBlockHeightOffset) < climbSpaceToCrouch)
+            {
+                Debug.Log("Climb obstructed! not enough space!");
                 return;
             }
             //If all three are true, we should be able to vault up to this point.
@@ -518,6 +552,7 @@ namespace Balla.Gameplay.Player
         {
             //Start climbing!
             isClimbing = true;
+
             float t = 0;
             bool climbOnBody = climbTargetRB != null;
             rb.isKinematic = true;
@@ -570,7 +605,7 @@ namespace Balla.Gameplay.Player
 
         protected void CheckState()
         {
-            isCrouching = Input.Crouch;
+            isCrouching = Input.Crouch || Physics.SphereCast(groundCheckOrigin.position, capsule.radius * 0.9f, transform.up, out _, standHeadHeight + .5f, groundMask);
             if (_lastCrouch != isCrouching)
             {
                 _lastCrouch = isCrouching;
@@ -698,9 +733,6 @@ namespace Balla.Gameplay.Player
                 float forceMult = 1;
                 switch (moveState)
                 {
-                    case MovementState.Walk:
-                        forceMult = 1;
-                        break;
                     case MovementState.Crouch:
                         forceMult = crouchMoveForceMult;
                         break;
@@ -729,7 +761,7 @@ namespace Balla.Gameplay.Player
         protected void Crouch()
         {
             //If trying to crouch, we should move towards 1. If trying to stand, we should move towards 0.
-            int _crouchtarget = isCrouching ? 1 : 0;
+            int _crouchtarget = isCrouching  ? 1 : 0;
             if (currentCrouch != _crouchtarget)
             {
                 currentCrouch = Mathf.MoveTowards(currentCrouch, _crouchtarget, crouchIncrement * Delta);
@@ -744,8 +776,6 @@ namespace Balla.Gameplay.Player
             {
                 //We want to jump away from the wall, which means we should go back and store the normal of the wall we're climbing, probably. Or we can just jump 
                 isClimbing = false;
-
-
                 isGrounded = false;
                 Input.Jump = false;
                 currJumpCD = 0;
