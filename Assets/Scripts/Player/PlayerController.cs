@@ -1,12 +1,21 @@
 using Balla;
 using UnityEngine;
 using Balla.Core;
-using Balla.Input;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Networking.PlayerConnection;
 namespace Balla.Gameplay.Player
 {
-
+    public enum MovementState
+    {
+        None = 0,
+        Walk = 1,
+        Crouch = 2,
+        Sprint = 4,
+        Air = 8,
+        Ladder = 16,
+        Mantle = 32,
+        Special = 64
+    }
 
     /// <summary>
     /// A rigidbody-based character controller that floats the character above the ground.
@@ -18,18 +27,21 @@ namespace Balla.Gameplay.Player
     /// <br></br> The Player Controller will handle almost all aspects of motion. It will also provde information for motion behaviours that are not handled by this script.
     /// <br></br> Examples include Ziplines and travelling via portals.
     /// </summary>
-    public class PlayerController : BallaScript, IBallaMessages
+    public class PlayerController : BallaNetScript, IBallaMessages
     {
         [SerializeField] internal Rigidbody rb;
         [SerializeField] internal CapsuleCollider capsule;
 
-        [SerializeField, ReadOnly, Tooltip("Obtained from Camera.Main if this player is the local authority.")] internal Transform cam;
-        [SerializeField, Tooltip("Where to move the camera to when updating the player.")] internal Transform camTargetPoint;
+
+
+        [SerializeField, ReadOnly, Tooltip("Obtained from Camera.Main if this player is the local authority.")] internal Camera cam;
+        [SerializeField, Tooltip("Where to Move the camera to when updating the player.")] internal Transform camTargetPoint;
         protected Vector3 _camPosOld;
         protected Quaternion _camRotOld;
-
+        public MovementState moveState;
         [SerializeField, Tooltip("The transform moved when the player crouches")] internal Transform crouchTransform;
 
+        bool _lastCrouch;
         #region Looking
 
         [SerializeField, Tooltip("The transform used to aim up and down with")] internal Transform aimTransform;
@@ -42,45 +54,52 @@ namespace Balla.Gameplay.Player
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("How much force is applied when moving forwards")]
         protected float forwardForce;
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("How much force is applied while moving sideways")]
         protected float strafeForce;
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("How much force is applied while moving backwards")]
         protected float backForce;
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("Should we use the forward move force for all directions?")]
         protected bool unifiedMoveForce;
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("How much damping is applied on the ground?")]
         protected float baseGroundDamping;
+
+        [SerializeField, Tooltip("How much much more force should be applied while sprinting?")]
+        protected float sprintForceMultiplier = 1.5f;
+
+
         [Header("Air Movement")]
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("How much force is applied while moving in the air")]
         protected float airMoveForce;
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("How much velocity damping is applied while in the air")]
         protected float baseAirDamping;
         #endregion
-        #region
-        [SerializeField, Tooltip("")]
+        #region Jump
+        [SerializeField, Tooltip("How much force is applied while jumping")]
         protected float jumpSpeed;
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("How often we can jump?\nAlso controls the delay before we can be considered \"grounded\" again after jumping.")]
         protected float jumpCooldown;
+        public int maxAirJumpCount;
+        protected int airJumpCount;
         protected float currJumpCD;
         #endregion
         #region Slide
@@ -111,7 +130,9 @@ namespace Balla.Gameplay.Player
         /// <summary>
         /// How crouched the player is. This value moves between 0 and 1 when the player is crouching or uncrouching.
         /// </summary>
-        internal float currentCrouch;
+        [SerializeField, ReadOnly] internal float currentCrouch;
+
+        [SerializeField, Tooltip("How much faster/slower the player moves while crouched")] protected float crouchMoveForceMult;
         /// <summary>
         /// The height of the player's head when standing, in local space. Crouching interpolates between this and <see cref="crouchHeadHeight"/>
         /// </summary>
@@ -129,7 +150,7 @@ namespace Balla.Gameplay.Player
         /// How long it takes for the player's head and capsule to lerp towards the target. Higher values here make you crouch slower.
         /// </summary>
         [SerializeField, Tooltip("How long crouching takes.")] protected float crouchTime;
-        protected float crouchIncrement;
+        [SerializeField, ReadOnly] protected float crouchIncrement;
         /// <summary>
         /// How tall the player's capsule is when standing. Try to account for this in the stand height.
         /// </summary>
@@ -218,17 +239,34 @@ namespace Balla.Gameplay.Player
         float connectionDeltaYaw, connectionYaw, connectionLastYaw;
         [SerializeField] protected float surfaceMotionCentripetalMultiplier = 1;
         #endregion
+        #region Climbing
+        [Header("Climbing")]
+        public bool canClimb;
+        public Transform climbCastOrigin;
+        public float climbSpeed = 2;
+        public float maxClimbDistance = .75f;
+        public float maxClimbHeight = 1.5f;
+        public float climbBlockHeightOffset = -0.1f;
+        public bool canClimbToCrouch;
+        public float climbSpaceToStand = 1.9f;
+        public float climbSpaceToCrouch = 1f;
+        public float climbToCrouchHeight = .6f;
+        public float climbHeightOffset = 1;
+        public float climbForwardOffset = 0.5f;
+        public CapsuleCollider climbCastCapsule;
+        public AnimationCurve climbVerticalCurve, climbLateralCurve;
+        [ReadOnly, SerializeField] Vector3 climbEndPoint;
+        [ReadOnly, SerializeField] bool isClimbing;
+        [ReadOnly, SerializeField] float climbRate;
+
+
+        #endregion
         #region Unity Methods
 
         private void Start()
         {
             ConfigureGroundCheckPositions();
-
-            //Replace with Owner check later.
-            if (true)
-            {
-                cam = Camera.main.transform;
-            }
+            cam = Camera.main;
         }
 
         private void OnValidate()
@@ -249,7 +287,7 @@ namespace Balla.Gameplay.Player
                 }
             }
             _maxSpringLength = groundSpringRestLength + groundSpringTravel;
-            if(capsule != null)
+            if (capsule != null)
             {
                 standCapsuleHeight = capsule.height;
                 standCapsulePosition = capsule.center.y;
@@ -257,9 +295,9 @@ namespace Balla.Gameplay.Player
                 crouchCapsuleHeight = standCapsuleHeight - capsuleCrouchShrink;
                 crouchCapsulePosition = standCapsulePosition - capsuleCrouchShrink / 2;
             }
-            if(aimTransform != null)
+            if (aimTransform != null)
             {
-                standHeadHeight = aimTransform.localPosition.y;
+                standHeadHeight = crouchTransform.localPosition.y;
                 crouchHeadHeight = standHeadHeight - crouchShrinkFactor;
             }
             crouchIncrement = (1 / crouchTime);
@@ -267,6 +305,7 @@ namespace Balla.Gameplay.Player
         void ConfigureGroundCheckPositions()
         {
             groundCheckPositions = new Vector3[groundCheckRays];
+            _maxSpringLength = groundSpringRestLength + groundSpringTravel;
             for (int i = 0; i < groundCheckRays; i++)
             {
                 groundCheckPositions[i] = Quaternion.Euler(0, groundCheckAngle * i, 0) * transform.forward * groundCheckRadius
@@ -281,13 +320,33 @@ namespace Balla.Gameplay.Player
         }
         private void OnDrawGizmos()
         {
+            Gizmos.matrix = Matrix4x4.identity;
             if (groundCheckOrigin != null && groundCheckPositions != null)
             {
+                Gizmos.color = Color.yellow;
                 for (int i = 0; i < groundCheckRays; i++)
                 {
                     Gizmos.DrawRay(transform.position + (transform.rotation * groundCheckPositions[i]),
-                        Vector3.down * groundCheckDistance);
+                        Vector3.down * (_maxSpringLength + groundPositionOffset));
                 }
+            }
+            if (climbCastOrigin != null)
+            {
+                Vector3 forwardPoint = Vector3.forward * maxClimbDistance;
+                Gizmos.matrix = climbCastOrigin.localToWorldMatrix;
+                //Forward cast Ray
+                Gizmos.color = Color.blue;
+                Gizmos.DrawRay(Vector3.zero, Vector3.forward * maxClimbDistance);
+
+                //Ground below cast
+                Gizmos.color = Color.red;
+                Gizmos.DrawRay(forwardPoint, Vector3.up * maxClimbHeight);
+
+                //Height block ray
+                Gizmos.color = Color.green;
+                Gizmos.DrawRay((Vector3.forward * (maxClimbDistance - 0.02f)) - (Vector3.up * climbBlockHeightOffset), Vector3.up * (maxClimbHeight - climbBlockHeightOffset));
+
+
             }
         }
         #endregion
@@ -295,7 +354,9 @@ namespace Balla.Gameplay.Player
         #region LunarScript Overrides
         protected override void Timestep()
         {
-            if(currJumpCD >= jumpCooldown)
+            CheckState();
+            Crouch();
+            if (!isClimbing && currJumpCD >= jumpCooldown)
             {
                 CheckGround();
             }
@@ -304,12 +365,16 @@ namespace Balla.Gameplay.Player
         protected override void AfterFrame()
         {
             base.AfterFrame();
-            Look();
+            if (Input.Look != Vector2.zero)
+            {
+                RotatePlayer();
+            }
             UpdateCamera();
         }
-
-
         #endregion
+
+
+
         #region Motion
         /// <summary>
         /// This method performs the ground check raycasts and gathers information about the surface they are on.<br></br>
@@ -353,9 +418,19 @@ namespace Balla.Gameplay.Player
                 groundNormal.Normalize();
                 rb.AddForce(transform.up * groundSpringForce);
                 TransformSurfaceNormal();
+                airJumpCount = maxAirJumpCount;
             }
             InheritSurfaceMotion();
         }
+
+        /// <summary>
+        /// Runs through a series of parameters to determine which state the player is currently in.
+        /// </summary>
+        protected void CheckMoveState()
+        {
+
+        }
+
         /// <summary>
         /// Called within <see cref="CheckGround"/>, TransformSurfaceNormal calculates all the variations of the surface normal that the player may need.
         /// <br></br>It calculates the following:<br></br>
@@ -365,7 +440,7 @@ namespace Balla.Gameplay.Player
         protected void TransformSurfaceNormal()
         {
             Debug.DrawRay(transform.position, groundNormal, Color.green);
-            slopeForwardFull = Vector3.Cross(transform.right, groundNormal);
+            slopeForwardFull = Vector3.Cross(rotationRoot.right, groundNormal);
             Debug.DrawRay(transform.position, slopeForwardFull, Color.blue);
             slopeRightFull = Vector3.Cross(groundNormal, slopeForwardFull);
             Debug.DrawRay(transform.position, slopeRightFull, Color.red);
@@ -390,10 +465,118 @@ namespace Balla.Gameplay.Player
         /// </summary>
         protected void HandleMotion()
         {
-            Crouch();
+            if (!isGrounded && !isClimbing && Input.Move.y > 0.3f)
+            {
+                CheckClimb();
+            }
+            CheckMoveState();
             SimpleMove();
             TryJump();
         }
+        void CheckClimb()
+        {
+            //Cast forwards to see if there's a surface to climb.
+            //We'll try using a capsule cast instead of a raycast to catch stuff at all heights
+            //Something could be a climbable height, but cut off just above or just below the target point.
+            Vector3 origin = climbCastOrigin.position + climbCastCapsule.center;
+            Vector3 offset = (transform.up * climbCastCapsule.height / 2);
+            Debug.DrawRay(origin, climbCastOrigin.forward, Color.powderBlue * maxClimbDistance, 2);
+            if (!Physics.CapsuleCast(origin + offset, origin - offset, climbCastCapsule.radius, climbCastOrigin.forward, out RaycastHit hitFwd, maxClimbDistance, groundMask))
+            {
+                Debug.Log("Forward climb failed");
+                return;
+            }
+            //Leave early if we don't hit here.
+            Vector3 fwdPoint = climbCastOrigin.position + (transform.forward * (capsule.radius + hitFwd.distance));
+            //Now we should cast up to see if we have enough space to stand in the spot in front of us.
+            Debug.DrawRay(fwdPoint - (transform.up * climbBlockHeightOffset), transform.up * (maxClimbHeight - climbBlockHeightOffset), Color.mediumPurple * maxClimbDistance, 2);
+            if (Physics.Raycast(fwdPoint - (transform.up * climbBlockHeightOffset), transform.up, out RaycastHit hitUp, maxClimbHeight - climbBlockHeightOffset, groundMask) && (hitUp.distance - climbBlockHeightOffset) < climbSpaceToCrouch)
+            {
+                Debug.Log("Climb obstructed! not enough space!");
+                return;
+            }
+            //Return if this one does not hit OR if we don't have enough space to stand/crouch here.
+            Debug.DrawRay(fwdPoint + (transform.up * (maxClimbHeight + 0.05f)), -transform.up * (maxClimbHeight + 0.05f), Color.orange, 2);
+            if (!Physics.Raycast(fwdPoint + (transform.up * (maxClimbHeight + 0.05f)), -transform.up, out RaycastHit hitDown, maxClimbHeight + 0.05f, groundMask) || hitDown.distance <= 0.04f)
+            {
+                Debug.Log("No surface to climb on OR the climb is too high up!! Is this check overlapping?");
+                return;
+            }
+            //If all three are true, we should be able to vault up to this point.
+            //We also need to check if there's a rigidbody attached to this component!
+            if (hitDown.rigidbody != null)
+            {
+                climbTargetRB = hitDown.rigidbody;
+            }
+            bool crouchOnClimb = Physics.Linecast(hitDown.point, hitDown.point + (transform.up * climbSpaceToStand), groundMask);
+            climbEndPoint = hitDown.point + ((transform.up * climbHeightOffset) + (transform.forward * climbForwardOffset));
+            Debug.DrawRay(climbEndPoint, Vector3.up, Color.red, 1f);
+            StartCoroutine(ClimbToPoint(crouchOnClimb));
+        }
+        Rigidbody climbTargetRB;
+        IEnumerator ClimbToPoint(bool crouchOnClimb)
+        {
+            //Start climbing!
+            isClimbing = true;
+            float t = 0;
+            bool climbOnBody = climbTargetRB != null;
+            rb.isKinematic = true;
+            Vector3 start;
+            if (climbOnBody)
+            {
+                start = climbTargetRB.transform.InverseTransformPoint(transform.position);
+                climbEndPoint = climbTargetRB.transform.InverseTransformPoint(climbEndPoint);
+            }
+            else
+            {
+                start = transform.position;
+            }
+            isCrouching = crouchOnClimb;
+            Vector3 climbPoint = start;
+            float dist = Vector3.Distance(start, climbEndPoint);
+            climbRate = climbSpeed / dist;
+            float lastYaw = 0;
+            var wff = new WaitForFixedUpdate();
+            while (t < 1 && isClimbing)
+            {
+                t += climbRate * Time.fixedDeltaTime;
+                float hLerp = climbLateralCurve.Evaluate(t);
+                climbPoint = new Vector3()
+                {
+                    x = Mathf.LerpUnclamped(start.x, climbEndPoint.x, hLerp),
+                    y = Mathf.LerpUnclamped(start.y, climbEndPoint.y, climbVerticalCurve.Evaluate(t)),
+                    z = Mathf.LerpUnclamped(start.z, climbEndPoint.z, hLerp),
+                };
+                if (climbOnBody)
+                {
+                    transform.rotation *= Quaternion.Euler(0, climbTargetRB.transform.eulerAngles.y - lastYaw, 0);
+                    transform.position = climbTargetRB.transform.TransformPoint(climbPoint);
+                    lastYaw = climbTargetRB.transform.eulerAngles.y;
+                }
+                else
+                {
+                    transform.position = climbPoint;
+                }
+                if (crouchOnClimb)
+                {
+                    currentCrouch = hLerp;
+                }
+                yield return wff;
+            }
+            rb.isKinematic = false;
+            climbTargetRB = null;
+            isClimbing = false;
+        }
+
+        protected void CheckState()
+        {
+            isCrouching = Input.Crouch;
+            if (_lastCrouch != isCrouching)
+            {
+                _lastCrouch = isCrouching;
+            }
+        }
+
         /// <summary>
         /// Performs a variety of calculations to determine how the player should move when they are on a surface that also moves.
         /// <br></br>This includes rotating with surfaces the player stands on.
@@ -406,13 +589,14 @@ namespace Balla.Gameplay.Player
         protected void InheritSurfaceMotion()
         {
             //Now check if we're on a surface that can move
-            if(Physics.Raycast(groundCheckOrigin.position, -transform.up, out RaycastHit hit2, surfaceMotionCastLength, groundMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(groundCheckOrigin.position, -transform.up, out RaycastHit hit2, surfaceMotionCastLength, groundMask, QueryTriggerInteraction.Ignore))
             {
                 //assign the hit rigidbody to ConnectedBody
-                if(connectedBody == null && hit2.rigidbody != null)
+                if (connectedBody == null && hit2.rigidbody != null)
                 {
                     connectedBody = hit2.rigidbody;
                     connectionLastYaw = connectedBody.rotation.eulerAngles.y;
+                    SetConnectionPosition();
                 }
                 connectedBody = hit2.rigidbody;
             }
@@ -420,20 +604,24 @@ namespace Balla.Gameplay.Player
             {
                 connectedBody = null;
             }
-            if(connectedBody == null)
+            if (connectedBody == null)
             {
-                if(lastConnectedBody != null)
+                if (lastConnectedBody != null)
                 {
                     rb.AddForce(connectionVelocity, ForceMode.VelocityChange);
                 }
                 lastConnectedBody = null;
                 return;
             }
+            DoSurfaceMotion();
+        }
+        void DoSurfaceMotion()
+        {
             Vector3 connectDelta = connectedBody.transform.TransformPoint(connectionLocalPos) - connectionWorldPos;
             connectionVelocity = connectDelta / Delta;
 
-            connectionWorldPos = rb.position;
-            connectionLocalPos = connectedBody.transform.InverseTransformPoint(connectionWorldPos);
+            SetConnectionPosition();
+
 
             connectionYaw = connectedBody.rotation.eulerAngles.y;
             connectionDeltaYaw = connectionYaw - connectionLastYaw;
@@ -442,13 +630,20 @@ namespace Balla.Gameplay.Player
             transform.position += connectDelta;
             transform.rotation *= Quaternion.Euler(0, connectionDeltaYaw, 0);
             //We're also going to apply centripetal force based how fast we're rotating.
-            if(connectionDeltaYaw > 0.1f)
+            if (connectionDeltaYaw > 0.1f)
             {
                 CalculateCentripetalForce();
             }
 
             lastConnectedBody = connectedBody;
         }
+
+        void SetConnectionPosition()
+        {
+            connectionWorldPos = rb.position;
+            connectionLocalPos = connectedBody.transform.InverseTransformPoint(connectionWorldPos);
+        }
+
         /// <summary>
         /// When standing on a rotating surface, the player slowly moves towards the outside edge of the rotating surface.
         /// <br></br>The cause for this is not known. However, I'm going to attempt (very important word) to solve it here.
@@ -462,7 +657,6 @@ namespace Balla.Gameplay.Player
         /// </summary>
         protected void CalculateCentripetalForce()
         {
-
             //Lets think about this a little more abstract. We are, in essence, just moving point B around point A, at a distance R.
             //It doesn't matter what the various components of the equation are; its all the same maths.
             //What information do we have?
@@ -482,7 +676,7 @@ namespace Balla.Gameplay.Player
             //So we can calculate THIS really easily too! wowza!
             float F = rb.mass * ((w * w) / r);
             //Then we calculate the force direction by subtracting our two points from each other, putting them on the same plane to avoid vertical force.
-            Vector3 forceDir = (new Vector3(rb.position.x, 0, rb.position.z) - new Vector3(connectedBody.position.x,0, connectedBody.position.z)).normalized;
+            Vector3 forceDir = (new Vector3(rb.position.x, 0, rb.position.z) - new Vector3(connectedBody.position.x, 0, connectedBody.position.z)).normalized;
             //then apply the force. I'll also add a multiplier in case it isn't *quite* physically accurate. 
             rb.AddForce(F * surfaceMotionCentripetalMultiplier * forceDir);
         }
@@ -495,58 +689,84 @@ namespace Balla.Gameplay.Player
         {
             if (isGrounded)
             {
-                slopeAlignedVelocity = new(Vector3.Dot(rb.linearVelocity, slopeRightFull), Vector3.Dot(rb.linearVelocity, slopeForwardFull)); 
+                slopeAlignedVelocity = new(Vector3.Dot(rb.linearVelocity, slopeRightFull), Vector3.Dot(rb.linearVelocity, slopeForwardFull));
                 dampRight = slopeAlignedVelocity.x * -slopeRight;
                 dampForward = slopeAlignedVelocity.y * -slopeForward;
                 //combine the movement (the first half of the argument) and the damping (the second half) additively
                 rb.AddForce((dampForward + dampRight) * baseGroundDamping);
 
                 float forceMult = 1;
-                if(Input.moveInput != Vector2.zero)
+                switch (moveState)
+                {
+                    case MovementState.Walk:
+                        forceMult = 1;
+                        break;
+                    case MovementState.Crouch:
+                        forceMult = crouchMoveForceMult;
+                        break;
+                    case MovementState.Sprint:
+                        forceMult = sprintForceMultiplier;
+                        break;
+                    default:
+                        break;
+                }
+                if (Input.Move != Vector2.zero)
                 {
                     //Integrate walk/crouch/sprint later
-                    moveRight = Input.moveInput.x * strafeForce * slopeRight;
-                    moveForward = Input.moveInput.y * (Input.moveInput.y > 0 ? forwardForce : backForce) * slopeForward;
+                    moveRight = Input.Move.x * strafeForce * slopeRight;
+                    moveForward = Input.Move.y * (Input.Move.y > 0 ? forwardForce : backForce) * slopeForward;
                     rb.AddForce((moveForward + moveRight) * forceMult);
                 }
 
             }
             else
             {
-
+                moveRight = Input.Move.x * airMoveForce * transform.right;
+                moveForward = Input.Move.y * airMoveForce * transform.forward;
+                rb.AddForce(moveForward + moveRight);
             }
-        }
-        protected void Slide()
-        {
-
         }
         protected void Crouch()
         {
-
-            isCrouching = Input.crouchInput;
-
             //If trying to crouch, we should move towards 1. If trying to stand, we should move towards 0.
             int _crouchtarget = isCrouching ? 1 : 0;
-            if(currentCrouch != (isCrouching ? 1 : 0))
+            if (currentCrouch != _crouchtarget)
             {
                 currentCrouch = Mathf.MoveTowards(currentCrouch, _crouchtarget, crouchIncrement * Delta);
                 capsule.height = Mathf.Lerp(standCapsuleHeight, crouchCapsuleHeight, currentCrouch);
                 capsule.center = Vector3.up * Mathf.Lerp(standCapsulePosition, crouchCapsulePosition, currentCrouch);
-                aimTransform.localPosition = Vector3.up * Mathf.Lerp(standHeadHeight, crouchHeadHeight, currentCrouch);
+                crouchTransform.localPosition = Vector3.up * Mathf.Lerp(standHeadHeight, crouchHeadHeight, currentCrouch);
             }
         }
         protected void TryJump()
         {
-            if (isGrounded && currJumpCD >= jumpCooldown && Input.jumpInput)
+            if (isClimbing && Input.Jump)
             {
-                rb.AddForce(transform.up * (jumpSpeed + Mathf.Clamp(rb.linearVelocity.y, -4, 0)), ForceMode.VelocityChange);
+                //We want to jump away from the wall, which means we should go back and store the normal of the wall we're climbing, probably. Or we can just jump 
+                isClimbing = false;
+
+
                 isGrounded = false;
-                Input.jumpInput = false;
+                Input.Jump = false;
                 currJumpCD = 0;
             }
-            if(currJumpCD < jumpCooldown)
+            else
             {
-                currJumpCD += Delta;
+                if ((isGrounded || airJumpCount > 0) && currJumpCD >= jumpCooldown && Input.Jump)
+                {
+                    rb.AddForce(transform.up * (jumpSpeed + Mathf.Clamp(rb.linearVelocity.y, -4, 0)), ForceMode.VelocityChange);
+                    if (!isGrounded)
+                    {
+                        airJumpCount--;
+                    }
+                    isGrounded = false;
+                    Input.Jump = false;
+                    currJumpCD = 0;
+                }
+                if (currJumpCD < jumpCooldown)
+                {
+                    currJumpCD += Delta;
+                }
             }
         }
         #endregion
@@ -561,38 +781,18 @@ namespace Balla.Gameplay.Player
         /// <br></br>Both players AND servers will have control over their rotation, by allowing the player to rotate a child transform.
         /// <br></br>When sending move inputs, players will also send their current rotation to ensure the server has the most up-to-date information.
         /// </summary>
-        protected void Look()
+        protected void RotatePlayer()
         {
-            if (Input.lookInput == Vector2.zero)
-                return;
+
             float oldPitch = pitch;
-            pitch = Mathf.Clamp(pitch + Input.lookInput.y, -89.5f, 89.5f);
-            lookDelta = new(Input.lookInput.x, pitch - oldPitch);
+            pitch = Mathf.Clamp(pitch + Input.Look.y, -89.5f, 89.5f);
+            lookDelta = new(Input.Look.x, pitch - oldPitch);
             rotationRoot.localRotation *= Quaternion.Euler(0, lookDelta.x, 0);
             aimTransform.localRotation = Quaternion.Euler(-pitch, 0, 0);
         }
         protected void UpdateCamera()
         {
-            bool posUpdate = _camPosOld != camTargetPoint.position;
-            bool rotUpdate = _camRotOld != camTargetPoint.rotation;
-            
-            if(posUpdate && rotUpdate)
-            {
-                cam.transform.SetPositionAndRotation(camTargetPoint.position, camTargetPoint.rotation);
-            }
-            else
-            {
-                if (posUpdate)
-                {
-                    cam.transform.position = camTargetPoint.position;
-                }
-                if (rotUpdate)
-                {
-                    cam.transform.rotation = camTargetPoint.rotation;
-                }
-            }
-            _camPosOld = camTargetPoint.position;
-            _camRotOld = camTargetPoint.rotation;
+            cam.transform.SetPositionAndRotation(camTargetPoint.position, camTargetPoint.rotation);
         }
         #endregion Non-motion
     }

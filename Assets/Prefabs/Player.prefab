@@ -63,6 +63,61 @@ Transform:
   - {fileID: 4232281042344735280}
   m_Father: {fileID: 97969236595135320}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1393227896469412608
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6178342392602389529}
+  - component: {fileID: 4993762627948825172}
+  m_Layer: 0
+  m_Name: ClimbCastCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6178342392602389529
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393227896469412608}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 97969236595135320}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &4993762627948825172
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393227896469412608}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.13
+  m_Height: 1.5
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1454529342431210282
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,6 +237,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4232281042344735280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5875190040664333754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8003905282079859374}
+  m_Layer: 0
+  m_Name: ClimbOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8003905282079859374
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5875190040664333754}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.566, z: 0.083}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 97969236595135320}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6778437184837130348
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +332,9 @@ Transform:
   m_Children:
   - {fileID: 2727338081345575819}
   - {fileID: 7138407094573675852}
+  - {fileID: 6178342392602389529}
   - {fileID: 9011621902923839911}
+  - {fileID: 8003905282079859374}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4956680199912701787
@@ -261,10 +349,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d84e99742d5e0141b60a8696852f7fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 3768126906538014519}
   capsule: {fileID: 1640293706136498278}
   cam: {fileID: 0}
   camTargetPoint: {fileID: 8360857081853298165}
+  moveState: 0
   crouchTransform: {fileID: 4232281042344735280}
   aimTransform: {fileID: 4232281042344735280}
   rotationRoot: {fileID: 97969236595135320}
@@ -273,19 +363,24 @@ MonoBehaviour:
   backForce: 30
   unifiedMoveForce: 0
   baseGroundDamping: 11
+  sprintForceMultiplier: 1.5
   airMoveForce: 0
   baseAirDamping: 0
   jumpSpeed: 4
   jumpCooldown: 0.1
+  maxAirJumpCount: 0
   slideStartSpeed: 0
   slideSteerForce: 0
   slideDamping: 0
   slideCutoffSpeed: 0
   isCrouching: 0
+  currentCrouch: 0
+  crouchMoveForceMult: 0
   standHeadHeight: 0.397
   crouchShrinkFactor: 0.5
   crouchHeadHeight: -0.102999985
   crouchTime: 0.2
+  crouchIncrement: 5
   standCapsuleHeight: 1.5
   capsuleCrouchShrink: 0.5
   crouchCapsuleHeight: 1
@@ -310,6 +405,70 @@ MonoBehaviour:
   connectedBody: {fileID: 0}
   lastConnectedBody: {fileID: 0}
   surfaceMotionCentripetalMultiplier: -0.008
+  canClimb: 0
+  climbCastOrigin: {fileID: 8003905282079859374}
+  climbSpeed: 4
+  maxClimbDistance: 0.55
+  maxClimbHeight: 1.5
+  climbBlockHeightOffset: -0.1
+  canClimbToCrouch: 0
+  climbSpaceToStand: 1.9
+  climbSpaceToCrouch: 1
+  climbToCrouchHeight: 0.6
+  climbHeightOffset: -0.2
+  climbForwardOffset: 0.5
+  climbCastCapsule: {fileID: 4993762627948825172}
+  climbVerticalCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  climbLateralCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  climbEndPoint: {x: 0, y: 0, z: 0}
+  isClimbing: 0
+  climbRate: 0
 --- !u!54 &3768126906538014519
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -317,10 +476,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8830037989592758132}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

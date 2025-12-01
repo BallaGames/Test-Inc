@@ -24,10 +24,52 @@ namespace Balla.Input
         /// </summary>
         public static PlayerInput InputManager;
 
-        internal Vector2 moveInput, lookInput;
-        internal bool jumpInput, crouchInput, sprintInput, interactInput;
+        internal Vector2 Move => GetValue(move);
+        internal Vector2 Look => GetValue(look);
+        internal bool Jump
+        {
+            get
+            {
+                return GetValue(jump);
+            }
+            set
+            {
+                jump = value;
+            }
+        }
+        internal bool Crouch => GetValue(crouch);
+        internal bool Sprint => GetValue(sprint);
+        internal bool Interact => GetValue(interact);
+        internal bool Attack => GetValue(attack);
+        internal bool AltAttack => GetValue(altAttack);
+        internal bool Grab => GetValue(grab);
+        internal bool PrevEquip => GetValue(prevEquip);
+        internal bool NextEquip => GetValue(nextEquip);
+        Vector2 move, look;
+        bool crouch, sprint, interact, attack, altAttack, grab, prevEquip, nextEquip, jump;
+
+        bool GetValue(bool target)
+        {
+            return target && !gamePaused;
+        }
+        Vector2 GetValue(Vector2 target)
+        {
+            return gamePaused ? Vector2.zero : target;
+        }
+
+        public bool gamePaused;
         public float lookSpeed = 15;
 
+        public Action<bool> OnPause;
+
+        public void SubscribeToActionPerform(InputAction action, Action target)
+        {
+            action.performed += (ctx) => target?.Invoke();
+        }
+        public void UnsubscribeFromActionPerform(InputAction action, Action target)
+        {
+            action.performed -= (ctx) => target?.Invoke();
+        }
         public void Initialised()
         {
             actions = new CS_Actions();
@@ -38,15 +80,28 @@ namespace Balla.Input
             SubscribeInput(actions.Player.Interact, GetInteract);
             SubscribeInput(actions.Player.Crouch, GetCrouch);
             SubscribeInput(actions.Player.Sprint, GetSprint);
+            SubscribeInput(actions.Player.Attack, GetAttack);
+            SubscribeInput(actions.Player.AltAttack, GetAltAttack);
+            SubscribeInput(actions.Player.Grab, GetGrab);
+            SubscribeInput(actions.Player.Next, GetNextEquip);
+            SubscribeInput(actions.Player.Previous, GetPrevEquip);
+            SubscribeInput(actions.Player.Pause, GetPause);
         }
+
         public void Terminate()
         {
             UnsubscribeInput(actions.Player.Move, GetMove);
             UnsubscribeInput(actions.Player.Look, GetLook);
-            UnsubscribeInput(actions.Player.Jump , GetJump);
-            UnsubscribeInput(actions.Player.Interact , GetInteract);
-            UnsubscribeInput(actions.Player.Crouch , GetCrouch);
-            UnsubscribeInput (actions.Player.Sprint , GetSprint);
+            UnsubscribeInput(actions.Player.Jump, GetJump);
+            UnsubscribeInput(actions.Player.Interact, GetInteract);
+            UnsubscribeInput(actions.Player.Crouch, GetCrouch);
+            UnsubscribeInput(actions.Player.Sprint, GetSprint);
+            UnsubscribeInput(actions.Player.Attack, GetAttack);
+            UnsubscribeInput(actions.Player.AltAttack, GetAltAttack);
+            UnsubscribeInput(actions.Player.Grab, GetGrab);
+            UnsubscribeInput(actions.Player.Next, GetNextEquip);
+            UnsubscribeInput(actions.Player.Previous, GetPrevEquip);
+            UnsubscribeInput(actions.Player.Pause, GetPause);
             actions.Disable();
             actions.Dispose();
         }
@@ -88,30 +143,69 @@ namespace Balla.Input
         #region Input Callbacks
         public void GetMove(InputAction.CallbackContext ctx)
         {
-            moveInput = ctx.ReadValue<Vector2>();
+            move = ctx.ReadValue<Vector2>();
         }
         public void GetLook(InputAction.CallbackContext ctx)
         {
             //Look input is multiplied by delta time and lookSpeed when obtained
-            lookInput = GameCore.TimeMultiplier * Time.deltaTime * lookSpeed * ctx.ReadValue<Vector2>();
+            look = GameCore.TimeMultiplier * Time.deltaTime * lookSpeed * ctx.ReadValue<Vector2>();
         }
         public void GetInteract(InputAction.CallbackContext ctx)
         {
-            interactInput = ctx.ReadValueAsButton();
+            interact = ctx.ReadValueAsButton();
         }
         public void GetCrouch(InputAction.CallbackContext ctx)
         {
-            crouchInput = ctx.ReadValueAsButton();
+            crouch = ctx.ReadValueAsButton();
         }
         public void GetJump(InputAction.CallbackContext ctx)
         {
-            jumpInput = ctx.ReadValueAsButton();
+            jump = ctx.ReadValueAsButton();
         }
         public void GetSprint(InputAction.CallbackContext ctx)
         {
-            sprintInput = ctx.ReadValueAsButton();
+            sprint = ctx.ReadValueAsButton();
+        }
+        public void GetAttack(InputAction.CallbackContext ctx)
+        {
+            attack = ctx.ReadValueAsButton();
+        }
+        public void GetAltAttack(InputAction.CallbackContext ctx)
+        {
+            altAttack = ctx.ReadValueAsButton();
+        }
+        public void GetGrab(InputAction.CallbackContext ctx)
+        {
+            grab = ctx.ReadValueAsButton();
+        }
+        void GetNextEquip(InputAction.CallbackContext ctx)
+        {
+            nextEquip = ctx.ReadValueAsButton();
+        }
+        void GetPrevEquip(InputAction.CallbackContext ctx)
+        {
+            prevEquip = ctx.ReadValueAsButton();
+        }
+        void GetPause(InputAction.CallbackContext ctx)
+        {
+            if (ctx.performed)
+            {
+                TogglePause();
+            }
+        }
+        #endregion
+
+        void TogglePause()
+        {
+            SetPause(!gamePaused);
+        }
+        public void SetPause(bool paused)
+        {
+            gamePaused = paused;
+            Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = paused;
+            OnPause?.Invoke(paused);
         }
 
-        #endregion
     }
 }
