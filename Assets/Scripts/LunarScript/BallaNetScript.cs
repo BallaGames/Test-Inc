@@ -30,12 +30,10 @@ namespace Balla.Core
 
         void Subscribe()
         {
-            Debug.Log("Subscribed Lunarscript");
             GameCore.Subscribe(this);
         }
         void Unsubscribe()
         {
-            Debug.Log("Unsubscribed Lunarscript");
             GameCore.Unsubscribe(this);
         }
         protected virtual void OnEnable()

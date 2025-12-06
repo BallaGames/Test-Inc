@@ -24,6 +24,8 @@ namespace Balla.Input
         /// </summary>
         public static PlayerInput InputManager;
 
+        public static Action<bool> OnPauseChanged;
+
         internal Vector2 Move => GetValue(move);
         internal Vector2 Look => GetValue(look);
         internal bool Jump
@@ -205,6 +207,7 @@ namespace Balla.Input
             Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = paused;
             OnPause?.Invoke(paused);
+            OnPauseChanged?.Invoke(paused);
         }
 
     }
