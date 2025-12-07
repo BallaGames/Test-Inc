@@ -103,6 +103,7 @@ public class SteamLobbyHelper : MonoBehaviour
             Debug.LogWarning("Cannot Join Lobby!");
         }
         //This should set the lobby, right?
+        TransportSelector.Instance.SetCurrentTransport(TransportSelector.Transport.steam);
         TransportSelector.Instance.steamTransport.ConnectToSteamID = Result.Lobby.Owner.user.id.m_SteamID;
         NetworkManager.Singleton.StartClient();
         SetRandomPresence();
@@ -120,11 +121,14 @@ public class SteamLobbyHelper : MonoBehaviour
         //response.ForGame -- the game the invite is sent for
         //response.FromUser -- the user that invited you
         //response.toLobby -- the lobby you were invited to
+
+        Debug.Log($"INVITE FOR {response.ForGame.Name} FROM {response.FromUser.Name}, OWNED BY {response.ToLobby.Owner.user.Name}");
     }
     public void HandleLobbyJoinRequest(LobbyData lobby, UserData user)
     {
         // lobby is the lobby we're joining
         // user is the user that invited you
+        Debug.Log($"ATTEMPTING TO JOIN LOBBY OWNED BY {lobby.Owner.user.Name} - INVITED BY {user.Name}");
         JoinLobby(lobby);
     }
 
@@ -142,22 +146,17 @@ public class SteamLobbyHelper : MonoBehaviour
         foreach (var item in lobby.Members)
         {
             string memberName = item.user.Name;
-
-            item.user.LoadAvatar(avatar =>
-            {
-                
-            });
-
             string readMetaValues = item["lobby player data"];
             if (item.IsReady)
             {
                 //The member is ready!
+                Debug.Log($"Player {memberName} is ready!");
             }
             else
             {
                 //The member is NOT ready
+                Debug.Log($"Player {memberName} is NOT ready!");
             }
-
         }
     }
 

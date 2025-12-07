@@ -99,18 +99,27 @@ public class FriendsMenu : MonoBehaviour
         }
         foreach (var item in myFriends)
         {
-            if(UserData.Me.GameInfo.Game.GameId.m_GameID == item.GameInfo.data.m_gameID.m_GameID)
+            if(item.InThisGame)
             {
-                FriendMenuEntry fme = Instantiate(FME_Prefab, thisGameRoot);
-                fme.Initialise(item);
-                friendEntries.Add(fme);
+                CreateFriendEntry(item);
+                continue;
             }
-            else if(item.State != EPersonaState.k_EPersonaStateOffline)
+            if (item.InGame)
             {
-                FriendMenuEntry fme = Instantiate(FME_Prefab, thisGameRoot);
-                fme.Initialise(item);
-                friendEntries.Add(fme);
+                CreateFriendEntry(item);
+                continue;
+            }
+            if(item.State != EPersonaState.k_EPersonaStateOffline)
+            {
+                CreateFriendEntry(item);
+                continue;
             }
         }
+    }
+    void CreateFriendEntry(UserData item)
+    {
+        FriendMenuEntry fme = Instantiate(FME_Prefab, thisGameRoot);
+        fme.Initialise(item);
+        friendEntries.Add(fme);
     }
 }
