@@ -38,9 +38,30 @@ public class SteamLobbyHelper : MonoBehaviour
         }
         Matchmaking.Client.EventLobbyInvite.AddListener(ReceivedInvite);
         Overlay.Client.EventGameLobbyJoinRequested.AddListener(HandleLobbyJoinRequest);
+        Matchmaking.Client.EventLobbyLeave.AddListener(LeftLobby);
+        Matchmaking.Client.EventLobbyAskedToLeave.AddListener(AskedToLeaveLobby);
+
 
         Matchmaking.Client.EventLobbyChatUpdate.AddListener(HandleChatUpdate);
         LocalSteamData.OnInitialise += Initialise;
+    }
+    public void LeftLobby(LobbyData lobby)
+    {
+        if (NetworkManager.Singleton.IsClient)
+        {
+            NetworkManager.Singleton.Shutdown();
+            currentLobby = null;
+            SteamFriends.ClearRichPresence();
+        }
+    }
+    public void AskedToLeaveLobby(LobbyData lobby)
+    {
+        if (NetworkManager.Singleton.IsClient)
+        {
+            NetworkManager.Singleton.Shutdown();
+            currentLobby = null;
+            SteamFriends.ClearRichPresence();
+        }
     }
 
     public void SetRandomPresence()
@@ -111,7 +132,16 @@ public class SteamLobbyHelper : MonoBehaviour
 
     public void LeaveLobby(LobbyData lobby)
     {
-        lobby.Leave();
+        if(lobby.Owner.user == UserData.Me)
+        {
+            foreach (var item in lobby.Members)
+            {
+                //kick all the other users from the game
+                lobby.KickMember(item.user);
+            }
+            //then kick the host
+            lobby.KickMember(UserData.Me);
+        }
         currentLobby = null;
         SteamFriends.ClearRichPresence();
     }
