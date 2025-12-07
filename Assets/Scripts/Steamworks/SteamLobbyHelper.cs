@@ -105,6 +105,8 @@ public class SteamLobbyHelper : MonoBehaviour
             Debug.LogWarning($"Error Name - {System.Enum.GetName(typeof(EResult), result)}");
             return;
         }
+        data.SetJoinable(true);
+        
         SetLobbyMetadata(data);
         SetRandomPresence();
         currentLobby = data;
