@@ -1,0 +1,91 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "154",
+  "SoundBanks": [
+   {
+    "Id": "393239870",
+    "Type": "User",
+    "GUID": "{A1FA71DC-F85E-4B5F-9BC3-743906B02A48}",
+    "Language": "SFX",
+    "Hash": "{D0B7CB43-7AFA-AABA-5281-7E8DD56D00CC}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\SFX",
+    "ShortName": "SFX",
+    "Path": "SFX.bnk",
+    "Media": [
+     {
+      "Id": "447401763",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "concrete-footsteps-3.wav",
+      "CachePath": "C7/{C7D76C5E-39D4-308D-F727-86EF033B841A}.wem"
+     },
+     {
+      "Id": "452519624",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "concrete-footsteps-5.wav",
+      "CachePath": "A8/{A8980D3C-851E-755A-C37A-7008E59B0E12}.wem"
+     },
+     {
+      "Id": "699737944",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "concrete-footsteps-1.wav",
+      "CachePath": "28/{285A01F8-72C4-73BB-C9FF-28A427381CF4}.wem"
+     },
+     {
+      "Id": "811421911",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "concrete-footsteps-2.wav",
+      "CachePath": "8A/{8AF55EE5-006E-2293-AE1D-6ECD89A333EF}.wem"
+     },
+     {
+      "Id": "1024975609",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "concrete-footsteps-4.wav",
+      "CachePath": "C3/{C3FE16B8-115A-6A45-2BF0-A6ABFB4A3DDB}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "1866025847",
+      "Name": "footstep",
+      "ObjectPath": "\\Events\\Default Work Unit\\footstep",
+      "GUID": "{107562F7-6B23-4580-A92D-E4221118952F}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.11440625",
+      "DurationMax": "0.26125303",
+      "MediaRefs": [
+       {
+        "Id": "447401763"
+       },
+       {
+        "Id": "452519624"
+       },
+       {
+        "Id": "699737944"
+       },
+       {
+        "Id": "811421911"
+       },
+       {
+        "Id": "1024975609"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{B32AE81A-7DF5-2114-A972-737660D9A47E}"
+ }
+}
