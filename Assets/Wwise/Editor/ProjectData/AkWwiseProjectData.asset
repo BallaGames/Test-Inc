@@ -66,8 +66,22 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: 26e7d6d711fbd248a0f25e1545d880f7
     GuidInternal: 
-    m_lastTime: -8584420362054018330
-    List: []
+    m_lastTime: -8584362560014746403
+    List:
+    - name: SFX
+      guid: dc71faa15ef85f4b9bc3743906b02a48
+      id: 393239870
+      PathAndIcons:
+      - ElementName: SoundBanks
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 26e7d6d711fbd248a0f25e1545d880f7
+      - ElementName: SFX
+        ObjectType: 7
+        guid: dc71faa15ef85f4b9bc3743906b02a48
+      Path: SoundBanks\Default Work Unit\SFX
   EventWwu:
   - PhysicalPath: Events\Default Work Unit.wwu
     PathAndIcons:
@@ -80,8 +94,25 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 25fdaa236387564f9cca78221b205973
     GuidInternal: 
-    m_lastTime: -8584420362054113386
-    List: []
+    m_lastTime: -8584362560015868219
+    List:
+    - name: footstep
+      guid: f7627510236b8045a92de4221118952f
+      id: 1866025847
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 25fdaa236387564f9cca78221b205973
+      - ElementName: footstep
+        ObjectType: 3
+        guid: f7627510236b8045a92de4221118952f
+      Path: Events\Default Work Unit\footstep
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:

@@ -2,6 +2,7 @@ using UnityEngine;
 using Balla.Core;
 using System.Collections;
 using Unity.Netcode;
+using System;
 namespace Balla.Gameplay.Player
 {
     public enum MovementState
@@ -276,6 +277,32 @@ namespace Balla.Gameplay.Player
         //--------------------------
         //--------------------------
         //--------------------------
+        #region Events
+        /// <summary>
+        /// Invoked when the player lands, passing the velocity when landing as the parameter
+        /// </summary>
+        public Action<float> OnLand;
+        /// <summary>
+        /// Invoked when the player jumps. Argument is true when double jumping. Ignore if not using double jump.
+        /// </summary>
+        public Action<bool> OnJump;
+        /// <summary>
+        /// Invoked when the player starts or stops crouching. Argument is crouch state
+        /// </summary>
+        public Action<bool> OnCrouchChanged;
+        /// <summary>
+        /// Invoked when the player starts sliding
+        /// </summary>
+        public Action OnSlideStart;
+        /// <summary>
+        /// Invoked when the player stops slidings
+        /// </summary>
+        public Action OnSlideEnd;
+        /// <summary>
+        /// Invoked when the player starts climbing on something
+        /// </summary>
+        public Action OnClimb;
+        #endregion Events
         #region Unity Methods
         private void Start()
         {
