@@ -26,6 +26,7 @@ public class PlayerController : BallaNetScript
         if(!ioError && ticket.Result == EResult.k_EResultOK)
         {
             //Send the ticket response data to the host/server
+            this.ticket = ticket;
             SendAuthTicket_RPC(ticket.Data, LocalSteamData.UserData);
         }
     }
@@ -39,6 +40,8 @@ public class PlayerController : BallaNetScript
         else
         {
             Authentication.EndAuthSession(clientSteamIDs[OwnerClientId]);
+            Authentication.CancelAuthTicket(ticket);
+            ticket = null;
         }
     }
     [Rpc(SendTo.Server)]
