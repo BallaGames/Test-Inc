@@ -281,7 +281,7 @@ Transform:
   m_GameObject: {fileID: 3921322272686684156}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.198}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -574,7 +574,7 @@ GameObject:
   - component: {fileID: 434598309292758476}
   - component: {fileID: -6908973802085176263}
   m_Layer: 6
-  m_Name: Player
+  m_Name: PlayerBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -864,7 +864,7 @@ MonoBehaviour:
   maxCarryMass:
     m_InternalValue: 4
   CarryForce:
-    m_InternalValue: 0.9
+    m_InternalValue: 35
   Grabbing:
     m_InternalValue: 0
   Interacting:
@@ -879,7 +879,7 @@ MonoBehaviour:
   interactMask:
     serializedVersion: 2
     m_Bits: 0
-  carryDrag: 0
+  carryDrag: 8
   grabForce: 3
   interactRange: 1.1
   interactRadius: 0.1

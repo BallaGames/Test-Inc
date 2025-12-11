@@ -2014,17 +2014,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2504434619269531642, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2504434619269531642, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2504434619269531642, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
+    - target: {fileID: 3035960380987968082, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
+      propertyPath: m_Size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3266934658927509631, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2044,35 +2036,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4199709081943428210, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00015308056
+      value: -0.00019256458
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3308006563269532720, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7509697765851762308}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
---- !u!1 &7509697765851762307 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3308006563269532720, guid: 0f7ee066ce3f17c4290c691ea35ef0b9, type: 3}
-  m_PrefabInstance: {fileID: 7509697765851762306}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7509697765851762308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7509697765851762307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef2605a46054b2743b9f05eff85e1276, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ServerBootstrapper
-  serverRequiredObjects: []
-  serverActive: 0
 --- !u!1001 &9161544744596959259
 PrefabInstance:
   m_ObjectHideFlags: 0

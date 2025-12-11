@@ -38,7 +38,7 @@ public class PlayerInteractor : BallaNetScript
     [SerializeField] protected float timeBetweenInteract;
 
     protected float interactDelay;
-    PlayerController pc;
+    PlayerMotor pc;
 
     public Transform interactOrigin;
 
@@ -59,7 +59,7 @@ public class PlayerInteractor : BallaNetScript
     {
         if(pc == null)
         {
-            pc = GetComponent<PlayerController>();
+            pc = GetComponent<PlayerMotor>();
         }
     }
 
