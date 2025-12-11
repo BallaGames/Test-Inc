@@ -1,6 +1,7 @@
 using Balla;
 using Balla.Core;
 using Balla.Gameplay.Player;
+using System.Net.Sockets;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -27,8 +28,8 @@ public class PlayerInteractor : BallaNetScript
     /// Whether this player is currently interacting with something
     /// </summary>
     public NetworkVariable<bool> Interacting = new(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    
-    [SerializeField, ReadOnly] protected Interactable lastInteractTarget;
+
+    [SerializeField, ReadOnly] protected Interactable lastInteractTarget, interactTarget, currentInteractable;
     [SerializeField, ReadOnly] protected Rigidbody lastGrabTarget;
     [SerializeField, ReadOnly] protected Rigidbody grabTarget, currentGrabbed;
     [SerializeField] protected LayerMask grabMask, interactMask;
@@ -39,13 +40,18 @@ public class PlayerInteractor : BallaNetScript
 
     protected float interactDelay;
     PlayerMotor pc;
-
+    public Transform grabPoint;
     public Transform interactOrigin;
+
+    private void Awake()
+    {
+
+    }
 
     [Rpc(SendTo.Owner)]
     public void SetInteractFromExternalSource_RPC(bool state, RpcParams data = default)
     {
-        if(IsOwner)
+        if (IsOwner)
             Interacting.Value = state;
     }
     [Rpc(SendTo.Owner)]
@@ -57,7 +63,7 @@ public class PlayerInteractor : BallaNetScript
 
     public override void OnNetworkSpawn()
     {
-        if(pc == null)
+        if (pc == null)
         {
             pc = GetComponent<PlayerMotor>();
         }
@@ -71,18 +77,67 @@ public class PlayerInteractor : BallaNetScript
         //If we're grabbing, we don't want to be able to interact.
         //We'll check this off first.
         CheckGrab();
-        if(!Grabbing.Value)
+        if (!Grabbing.Value)
             CheckInteract();
     }
     void CheckInteract()
     {
-
+        if (currentInteractable != null)
+        {
+            //if we're currently interacting with something...
+            if (!Input.AltAttack || !CastInteractRay(out RaycastHit hit) || hit.rigidbody == null || hit.collider.attachedRigidbody != currentInteractable.rb)
+            {
+                currentInteractable.SetInteract_RPC(false);
+                currentInteractable = null;
+            }
+        }
+        else
+        {
+            //We're not interacting with something right now
+            if (CastInteractRay(out RaycastHit hit))
+            {
+                if (hit.rigidbody != null)
+                {
+                    if (hit.rigidbody.TryGetComponent(out Interactable i))
+                    {
+                        if (interactTarget == null || lastInteractTarget != interactTarget)
+                        {
+                            interactTarget = i;
+                        }
+                        if (Input.AltAttack)
+                        {
+                            i.SetInteract_RPC(true);
+                            currentInteractable = i;
+                        }
+                    }
+                    else
+                    {
+                        interactTarget = null;
+                        //No interactable component present
+                    }
+                }
+                else
+                {
+                    interactTarget = null;
+                    //Hit rigidbody is null, so this can't be an interactable
+                }
+            }
+            else
+            {
+                interactTarget = null;
+            }
+        }
+        lastInteractTarget = interactTarget;
+    }
+    bool CastInteractRay(out RaycastHit hit)
+    {
+        return Physics.SphereCast(interactOrigin.position, interactRadius, interactOrigin.forward, out hit, interactRange, interactMask);
     }
     void CheckGrab()
     {
         if (currentGrabbed)
         {
-            currentGrabbed.AddForce(((interactOrigin.position - currentGrabbed.position) * CarryForce.Value) - (currentGrabbed.linearVelocity * carryDrag));
+            currentGrabbed.AddForce(((grabPoint.position - currentGrabbed.position) * CarryForce.Value) - (currentGrabbed.linearVelocity * carryDrag));
             if (!Input.Attack)
             {
                 pc.rb.mass -= currentGrabbed.mass;

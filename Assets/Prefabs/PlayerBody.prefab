@@ -870,6 +870,8 @@ MonoBehaviour:
   Interacting:
     m_InternalValue: 0
   lastInteractTarget: {fileID: 0}
+  interactTarget: {fileID: 0}
+  currentInteractable: {fileID: 0}
   lastGrabTarget: {fileID: 0}
   grabTarget: {fileID: 0}
   currentGrabbed: {fileID: 0}
@@ -878,10 +880,11 @@ MonoBehaviour:
     m_Bits: 385
   interactMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 385
   carryDrag: 8
   grabForce: 3
   interactRange: 1.1
   interactRadius: 0.1
   timeBetweenInteract: 0.1
-  interactOrigin: {fileID: 7402580809769558217}
+  grabPoint: {fileID: 7402580809769558217}
+  interactOrigin: {fileID: 8360857081853298165}

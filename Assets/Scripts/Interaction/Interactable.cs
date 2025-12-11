@@ -1,7 +1,9 @@
 using Balla.Core;
 using Balla.Gameplay.Player;
+using System;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 /// <summary>
@@ -15,16 +17,27 @@ using UnityEngine;
 /// Since the Interaction system relies on raycasts to detect them, 
 /// </summary>
 [DisallowMultipleComponent, RequireComponent(typeof(Rigidbody))]
-public abstract class Interactable : BallaNetScript
+public class Interactable : BallaNetScript
 {
     public NetworkVariable<bool> isInteractable = new();
     public NetworkVariable<bool> Interacting = new();
+
+    public UnityEvent u_OnInteractStart, u_OnInteractEnd, u_OnInteract;
+    public Action e_OnInteractStart, e_OnInteractCanel, e_OnInteract;
+    public Rigidbody rb;
 
     public PlayerInteractor currentInteractor;
 
     public bool holdInteract;
     public float interactTime;
     protected float currentTime;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+
+    }
+
     /// <summary>
     /// Called by the player that is starting an interaction on this object.<br></br>
     /// Sends the interact message to everyone.
@@ -36,17 +49,15 @@ public abstract class Interactable : BallaNetScript
     {
         if (IsServer)
             Interacting.Value = state;
-        if (holdInteract)
-        {
-            if (state)
-                InteractStart();
-            else
-                InteractEnd();
-        }
+
+        if (state)
+            InteractStart();
         else
+            InteractEnd();
+
+        if (!holdInteract && state)
         {
-            if (state)
-                InteractCompleted();
+            OnInteract();
         }
     }
     /// <summary>
@@ -54,22 +65,25 @@ public abstract class Interactable : BallaNetScript
     /// </summary>
     public virtual void InteractStart()
     {
-
+        u_OnInteractStart?.Invoke();
+        e_OnInteractStart?.Invoke();
     }
     /// <summary>
     /// Called when <see cref="holdInteract"/> is true and the player stops interacting with the object BEFORE interaction completes.
     /// </summary>
     public virtual void InteractEnd()
     {
-
+        u_OnInteractEnd?.Invoke();
+        e_OnInteractCanel?.Invoke();
     }
     /// <summary>
     /// Called when either:<br></br>
     /// > <see cref="holdInteract"/> is false and we interacted with this object<br></br>
     /// > <see cref="holdInteract"/> is true and we interacted with this object until interaction was completed.
     /// </summary>
-    public virtual void InteractCompleted()
+    public virtual void OnInteract()
     {
-
+        u_OnInteract?.Invoke();
+        e_OnInteract?.Invoke();
     }
 }
