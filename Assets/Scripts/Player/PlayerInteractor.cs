@@ -14,7 +14,7 @@ public class PlayerInteractor : BallaNetScript
     /// <summary>
     /// The mass at which you can no longer pick something up.
     /// </summary>
-    public NetworkVariable<float> MaxCarryWeight = new(4f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkVariable<float> maxCarryMass = new(4f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     /// <summary>
     /// The force applied to objects you are carrying
     /// </summary>
@@ -32,9 +32,11 @@ public class PlayerInteractor : BallaNetScript
     [SerializeField, ReadOnly] protected Rigidbody lastGrabTarget;
     [SerializeField, ReadOnly] protected Rigidbody grabTarget, currentGrabbed;
     [SerializeField] protected LayerMask grabMask, interactMask;
+    [SerializeField] protected float carryDrag;
     [SerializeField] protected float grabForce;
     [SerializeField] protected float interactRange, interactRadius;
     [SerializeField] protected float timeBetweenInteract;
+
     protected float interactDelay;
     PlayerController pc;
 
@@ -80,22 +82,25 @@ public class PlayerInteractor : BallaNetScript
     {
         if (currentGrabbed)
         {
-            currentGrabbed.AddForce(interactOrigin.position - currentGrabbed.position );
-            if (!Grabbing.Value)
+            currentGrabbed.AddForce(((interactOrigin.position - currentGrabbed.position) * CarryForce.Value) - (currentGrabbed.linearVelocity * carryDrag));
+            if (!Input.Attack)
             {
+                pc.rb.mass -= currentGrabbed.mass;
                 currentGrabbed = null;
+                Grabbing.Value = false;
             }
         }
         else if (Physics.SphereCast(interactOrigin.position, interactRadius, interactOrigin.forward, out RaycastHit hit, interactRange, grabMask))
         {
             //hit something, compare it to the previous grabbed
-            if (hit.rigidbody != null)
+            if (hit.rigidbody != null && hit.rigidbody.mass < maxCarryMass.Value)
             {
                 grabTarget = hit.rigidbody;
                 if (Input.Attack && hit.rigidbody.TryGetComponent(out NetworkObject n))
                 {
                     Grabbing.Value = true;
                     currentGrabbed = hit.rigidbody;
+                    pc.rb.mass += currentGrabbed.mass;
                     SendParentRequestOnGrab_RPC(n);
                 }
             }

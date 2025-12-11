@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class ServerManager : BallaNetScript
 {
-    public static Dictionary<ulong, SteamNetworkingSocketsTransport.SteamConnectionData> ConnectionMapping => TransportSelector.Instance.steamTransport.ConnectionMapping;
-
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -18,7 +16,7 @@ public class ServerManager : BallaNetScript
 
     private void OnClientConnected(ulong obj)
     {
-        bool val = ConnectionMapping.ContainsKey(obj);
-        Debug.Log($"Client Connected to server with ID: {obj} - Matches to Steam Connection? {val.ToString() + (val ? $":{ConnectionMapping[obj]}" : "NONE")}");
+
+
     }
 }

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9011621902923839911}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RaycastOrigin
   m_TagString: Untagged
   m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2727338081345575819}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 8418204508859773708, guid: 0000000000000000d000000000000000, type: 0}
@@ -74,7 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6178342392602389529}
   - component: {fileID: 4993762627948825172}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ClimbCastCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7138407094573675852}
   - component: {fileID: 1640293706136498278}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,7 +170,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.35
+  m_Radius: 0.3
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -184,7 +184,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4232281042344735280}
   - component: {fileID: 1779722825624786617}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
@@ -207,6 +207,7 @@ Transform:
   - {fileID: 8360857081853298165}
   - {fileID: 9156895049587041010}
   - {fileID: 7473080439499299359}
+  - {fileID: 7402580809769558217}
   m_Father: {fileID: 2727338081345575819}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1779722825624786617
@@ -255,6 +256,37 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!1 &3921322272686684156
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7402580809769558217}
+  m_Layer: 6
+  m_Name: GrabPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7402580809769558217
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3921322272686684156}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4232281042344735280}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4753647042818528940
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,7 +296,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8360857081853298165}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WorldCamPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -295,7 +327,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8003905282079859374}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ClimbOrigin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +360,7 @@ GameObject:
   - component: {fileID: 740710069190101049}
   - component: {fileID: 1679113560055157023}
   - component: {fileID: 4787292312149969098}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -415,7 +447,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9156895049587041010}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ViewCamPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -448,7 +480,7 @@ GameObject:
   - component: {fileID: 7473080439499299359}
   - component: {fileID: 963363162482945738}
   - component: {fileID: 8879148766940490200}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -541,7 +573,7 @@ GameObject:
   - component: {fileID: 1437204279975305546}
   - component: {fileID: 434598309292758476}
   - component: {fileID: -6908973802085176263}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -829,7 +861,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
   ShowTopMostFoldoutHeaderGroup: 1
-  MaxCarryWeight:
+  maxCarryMass:
+    m_InternalValue: 4
+  CarryForce:
     m_InternalValue: 0.9
   Grabbing:
     m_InternalValue: 0
@@ -841,12 +875,13 @@ MonoBehaviour:
   currentGrabbed: {fileID: 0}
   grabMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 385
   interactMask:
     serializedVersion: 2
     m_Bits: 0
-  grabForce: 0
-  interactRange: 0
-  interactRadius: 0
-  timeBetweenInteract: 0
-  interactOrigin: {fileID: 0}
+  carryDrag: 0
+  grabForce: 3
+  interactRange: 1.1
+  interactRadius: 0.1
+  timeBetweenInteract: 0.1
+  interactOrigin: {fileID: 7402580809769558217}

@@ -634,9 +634,14 @@ namespace Balla.Gameplay.Player
             //We also need to check if there's a rigidbody attached to this component!
             if (hitDown.rigidbody != null)
             {
+                if (!hitDown.rigidbody.isKinematic)
+                {
+                    //We cannot climb non-kinematic rigidbodies
+                    return;
+                }
                 climbTargetRB = hitDown.rigidbody;
             }
-            bool crouchOnClimb = Physics.Linecast(hitDown.point, hitDown.point + (transform.up * climbSpaceToStand), groundMask);
+                bool crouchOnClimb = Physics.Linecast(hitDown.point, hitDown.point + (transform.up * climbSpaceToStand), groundMask);
             climbEndPoint = hitDown.point + ((transform.up * climbHeightOffset) + (transform.forward * climbForwardOffset));
             Debug.DrawRay(climbEndPoint, Vector3.up, Color.red, 1f);
             StartCoroutine(ClimbToPoint(crouchOnClimb));
