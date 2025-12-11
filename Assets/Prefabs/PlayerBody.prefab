@@ -884,7 +884,7 @@ MonoBehaviour:
   carryDrag: 8
   grabForce: 3
   interactRange: 1.1
-  interactRadius: 0.1
+  interactRadius: 0.02
   timeBetweenInteract: 0.1
   grabPoint: {fileID: 7402580809769558217}
   interactOrigin: {fileID: 8360857081853298165}
