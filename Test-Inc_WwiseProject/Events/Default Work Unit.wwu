@@ -14,6 +14,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="interact_failed" ID="{261D02CD-9C5B-4E40-ACCB-5FBBC0497B7A}">
+					<ChildrenList>
+						<Action Name="" ID="{79D58E05-EFDB-48AF-8D61-61B9E35B4EDE}" ShortID="742222072">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Interact-Failed" ID="{5D557300-EBCF-4F17-9FFA-CE0A499D2FD0}" WorkUnitID="{E01D16DF-C7CF-4F32-97C5-472FF217D2A8}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
