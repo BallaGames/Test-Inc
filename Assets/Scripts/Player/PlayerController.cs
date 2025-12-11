@@ -69,6 +69,6 @@ public class PlayerController : BallaNetScript
     public void DenyAuthentication_RPC()
     {
         Debug.LogWarning("Auth denied by server.");
-        NetworkManager.Shutdown();
+        SteamLobbyHelper.Instance.LeftLobby(null);
     }
 }
