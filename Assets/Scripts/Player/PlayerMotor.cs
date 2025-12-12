@@ -313,6 +313,9 @@ namespace Balla.Gameplay.Player
             if (IsOwner)
             {
                 cam = Camera.main;
+
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
             }
         }
 

@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}",
     "Language": "SFX",
-    "Hash": "{E8C73C05-9AC5-A17E-EA11-491BBCB2A45E}",
+    "Hash": "{DBDDF9C8-8F39-5055-1644-4AB28A5CFC8C}",
     "ObjectPath": "Init",
     "ShortName": "Init",
     "Path": "Init.bnk",
@@ -36,14 +36,46 @@
     },
     "Busses": [
      {
+      "Id": "493417818",
+      "Name": "Music Audio Bus",
+      "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\Music Audio Bus",
+      "GUID": "{0B51D265-306D-4D2A-8EE8-56A51482B8E2}"
+     },
+     {
       "Id": "3803692087",
       "Name": "Master Audio Bus",
       "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus",
       "GUID": "{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}"
+     },
+     {
+      "Id": "4084199202",
+      "Name": "SFX Audio Bus",
+      "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\SFX Audio Bus",
+      "GUID": "{E3E4CC80-7594-47A4-A0D9-9AF92CFA61FA}"
+     }
+    ],
+    "GameParameters": [
+     {
+      "Id": "1067698521",
+      "Name": "SFX_Audio",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\SFX_Audio",
+      "GUID": "{BB09CD02-E803-4E81-B3A7-90BBFF7FD280}"
+     },
+     {
+      "Id": "2360908833",
+      "Name": "Music_Audio",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\Music_Audio",
+      "GUID": "{6428A086-3064-4FED-B401-85B77F849726}"
+     },
+     {
+      "Id": "4255754280",
+      "Name": "Master_Audio",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\Master_Audio",
+      "GUID": "{65E4C309-B861-49F3-88DA-30223B42C7D4}"
      }
     ]
    }
   ],
-  "FileHash": "{EED3B2AE-439E-2E76-425B-F4704E14046D}"
+  "FileHash": "{25CF291A-158F-4198-D01A-CF06D1955F07}"
  }
 }

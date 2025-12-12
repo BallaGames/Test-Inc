@@ -6,6 +6,7 @@
 				<SoundBank Name="SFX" ID="{A1FA71DC-F85E-4B5F-9BC3-743906B02A48}">
 					<ObjectInclusionList>
 						<ObjectRef Name="footstep" ID="{107562F7-6B23-4580-A92D-E4221118952F}" WorkUnitID="{23AAFD25-8763-4F56-9CCA-78221B205973}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="interact_failed" ID="{261D02CD-9C5B-4E40-ACCB-5FBBC0497B7A}" WorkUnitID="{23AAFD25-8763-4F56-9CCA-78221B205973}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

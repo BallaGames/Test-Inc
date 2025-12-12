@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{A1FA71DC-F85E-4B5F-9BC3-743906B02A48}",
     "Language": "SFX",
-    "Hash": "{D0B7CB43-7AFA-AABA-5281-7E8DD56D00CC}",
+    "Hash": "{8092A4C6-B55D-D2BD-5614-F30848039FD5}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\SFX",
     "ShortName": "SFX",
     "Path": "SFX.bnk",
@@ -30,6 +30,14 @@
       "Location": "Memory",
       "ShortName": "concrete-footsteps-5.wav",
       "CachePath": "A8/{A8980D3C-851E-755A-C37A-7008E59B0E12}.wem"
+     },
+     {
+      "Id": "632508811",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Interact-Failed.wav",
+      "CachePath": "6A/{6A4D4174-A528-C9D4-715A-8B66C2AD1873}.wem"
      },
      {
       "Id": "699737944",
@@ -82,10 +90,24 @@
         "Id": "1024975609"
        }
       ]
+     },
+     {
+      "Id": "3262347973",
+      "Name": "interact_failed",
+      "ObjectPath": "\\Events\\Default Work Unit\\interact_failed",
+      "GUID": "{261D02CD-9C5B-4E40-ACCB-5FBBC0497B7A}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.46571174",
+      "DurationMax": "0.58676004",
+      "MediaRefs": [
+       {
+        "Id": "632508811"
+       }
+      ]
      }
     ]
    }
   ],
-  "FileHash": "{097600AF-A9EE-A9CF-F42A-9F02E75A5F1A}"
+  "FileHash": "{62E08D89-A52F-1309-B2D8-E786E0C11731}"
  }
 }
