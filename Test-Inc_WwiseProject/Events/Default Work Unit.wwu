@@ -3,17 +3,6 @@
 	<Events>
 		<WorkUnit Name="Default Work Unit" ID="{23AAFD25-8763-4F56-9CCA-78221B205973}" PersistMode="Standalone">
 			<ChildrenList>
-				<Event Name="footstep" ID="{107562F7-6B23-4580-A92D-E4221118952F}">
-					<ChildrenList>
-						<Action Name="" ID="{8A7C0A3C-A791-4544-A77A-89B560742A1D}" ShortID="448156542">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="Footstep sounds" ID="{906B1017-6192-47D0-867F-6B2B0FBEDF3C}" WorkUnitID="{E01D16DF-C7CF-4F32-97C5-472FF217D2A8}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
 				<Event Name="interact_failed" ID="{261D02CD-9C5B-4E40-ACCB-5FBBC0497B7A}">
 					<ChildrenList>
 						<Action Name="" ID="{79D58E05-EFDB-48AF-8D61-61B9E35B4EDE}" ShortID="742222072">
@@ -25,6 +14,32 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Folder Name="Footstep Events" ID="{E98C5C55-276F-45FC-9CBD-0C00232A3B2A}" ShortID="617400266">
+					<ChildrenList>
+						<Event Name="concrete_footstep" ID="{107562F7-6B23-4580-A92D-E4221118952F}">
+							<ChildrenList>
+								<Action Name="" ID="{8A7C0A3C-A791-4544-A77A-89B560742A1D}" ShortID="448156542">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Concrete Footsteps" ID="{906B1017-6192-47D0-867F-6B2B0FBEDF3C}" WorkUnitID="{E01D16DF-C7CF-4F32-97C5-472FF217D2A8}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="ladder_footstep" ID="{A3DF3873-1966-4F3D-A15A-D54B586ECD57}">
+							<ChildrenList>
+								<Action Name="" ID="{0041BA51-71F6-4178-83AA-69FF51819555}" ShortID="174293936">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="Ladder Footsteps" ID="{AA1A80B6-2C02-44E3-B8FB-E0A6D22A9082}" WorkUnitID="{E01D16DF-C7CF-4F32-97C5-472FF217D2A8}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

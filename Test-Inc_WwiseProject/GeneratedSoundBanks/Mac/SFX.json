@@ -10,11 +10,19 @@
     "Type": "User",
     "GUID": "{A1FA71DC-F85E-4B5F-9BC3-743906B02A48}",
     "Language": "SFX",
-    "Hash": "{8092A4C6-B55D-D2BD-5614-F30848039FD5}",
+    "Hash": "{823BD3E0-4905-04CC-8E37-8F88539CDD64}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\SFX",
     "ShortName": "SFX",
     "Path": "SFX.bnk",
     "Media": [
+     {
+      "Id": "122544942",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Footsteps-Ladder-03.wav",
+      "CachePath": "13/{130CC6B6-957C-DCC4-BABB-02BA3E4AE58E}.wem"
+     },
      {
       "Id": "447401763",
       "Language": "SFX",
@@ -32,6 +40,14 @@
       "CachePath": "A8/{A8980D3C-851E-755A-C37A-7008E59B0E12}.wem"
      },
      {
+      "Id": "632310411",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Footstep-Ladder-01.wav",
+      "CachePath": "40/{40F31158-44F0-ECD3-C068-416FB71E3683}.wem"
+     },
+     {
       "Id": "632508811",
       "Language": "SFX",
       "Streaming": "false",
@@ -46,6 +62,22 @@
       "Location": "Memory",
       "ShortName": "concrete-footsteps-1.wav",
       "CachePath": "28/{285A01F8-72C4-73BB-C9FF-28A427381CF4}.wem"
+     },
+     {
+      "Id": "701926180",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Footstep-Ladder-02.wav",
+      "CachePath": "9A/{9A1B29F0-3FE5-F112-913D-17B46FC90904}.wem"
+     },
+     {
+      "Id": "804080715",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Footsteps-Ladder-04.wav",
+      "CachePath": "8E/{8E5D1C3F-F9EB-FB01-D40D-04D0B01D5A9E}.wem"
      },
      {
       "Id": "811421911",
@@ -66,9 +98,9 @@
     ],
     "Events": [
      {
-      "Id": "1866025847",
-      "Name": "footstep",
-      "ObjectPath": "\\Events\\Default Work Unit\\footstep",
+      "Id": "2496988773",
+      "Name": "concrete_footstep",
+      "ObjectPath": "\\Events\\Default Work Unit\\Footstep Events\\concrete_footstep",
       "GUID": "{107562F7-6B23-4580-A92D-E4221118952F}",
       "DurationType": "OneShot",
       "DurationMin": "0.11440625",
@@ -104,10 +136,33 @@
         "Id": "632508811"
        }
       ]
+     },
+     {
+      "Id": "1926856618",
+      "Name": "ladder_footstep",
+      "ObjectPath": "\\Events\\Default Work Unit\\Footstep Events\\ladder_footstep",
+      "GUID": "{A3DF3873-1966-4F3D-A15A-D54B586ECD57}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.10980327",
+      "DurationMax": "0.16603084",
+      "MediaRefs": [
+       {
+        "Id": "122544942"
+       },
+       {
+        "Id": "632310411"
+       },
+       {
+        "Id": "701926180"
+       },
+       {
+        "Id": "804080715"
+       }
+      ]
      }
     ]
    }
   ],
-  "FileHash": "{62E08D89-A52F-1309-B2D8-E786E0C11731}"
+  "FileHash": "{32B489BF-3F08-5B19-B655-48B53573518C}"
  }
 }

@@ -1,12 +1,17 @@
 Event	ID	Name			Wwise Object Path	Notes
-	1866025847	footstep			\Default Work Unit\footstep	
+	1926856618	ladder_footstep			\Default Work Unit\Footstep Events\ladder_footstep	
+	2496988773	concrete_footstep			\Default Work Unit\Footstep Events\concrete_footstep	
 	3262347973	interact_failed			\Default Work Unit\interact_failed	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	447401763	concrete-footsteps-3	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\C7\{C7D76C5E-39D4-308D-F727-86EF033B841A}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footstep sounds\concrete-footsteps-3		22440
-	452519624	concrete-footsteps-5	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\A8\{A8980D3C-851E-755A-C37A-7008E59B0E12}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footstep sounds\concrete-footsteps-5		13088
+	122544942	Footsteps-Ladder-03	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\13\{130CC6B6-957C-DCC4-BABB-02BA3E4AE58E}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Ladder Footsteps\Footsteps-Ladder-03		12718
+	447401763	concrete-footsteps-3	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\C7\{C7D76C5E-39D4-308D-F727-86EF033B841A}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Concrete Footsteps\concrete-footsteps-3		22440
+	452519624	concrete-footsteps-5	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\A8\{A8980D3C-851E-755A-C37A-7008E59B0E12}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Concrete Footsteps\concrete-footsteps-5		13088
+	632310411	Footstep-Ladder-01	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\40\{40F31158-44F0-ECD3-C068-416FB71E3683}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Ladder Footsteps\Footstep-Ladder-01		14296
 	632508811	Interact-Failed	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\6A\{6A4D4174-A528-C9D4-715A-8B66C2AD1873}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Interact-Failed		46202
-	699737944	concrete-footsteps-1	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\28\{285A01F8-72C4-73BB-C9FF-28A427381CF4}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footstep sounds\concrete-footsteps-1		12424
-	811421911	concrete-footsteps-2	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\8A\{8AF55EE5-006E-2293-AE1D-6ECD89A333EF}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footstep sounds\concrete-footsteps-2		16276
-	1024975609	concrete-footsteps-4	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\C3\{C3FE16B8-115A-6A45-2BF0-A6ABFB4A3DDB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footstep sounds\concrete-footsteps-4		19360
+	699737944	concrete-footsteps-1	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\28\{285A01F8-72C4-73BB-C9FF-28A427381CF4}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Concrete Footsteps\concrete-footsteps-1		12424
+	701926180	Footstep-Ladder-02	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\9A\{9A1B29F0-3FE5-F112-913D-17B46FC90904}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Ladder Footsteps\Footstep-Ladder-02		11928
+	804080715	Footsteps-Ladder-04	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\8E\{8E5D1C3F-F9EB-FB01-D40D-04D0B01D5A9E}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Ladder Footsteps\Footsteps-Ladder-04		12718
+	811421911	concrete-footsteps-2	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\8A\{8AF55EE5-006E-2293-AE1D-6ECD89A333EF}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Concrete Footsteps\concrete-footsteps-2		16276
+	1024975609	concrete-footsteps-4	C:\Users\mathe\Documents\GitHub\Test-Inc\Test-Inc_WwiseProject\.cache\C3\{C3FE16B8-115A-6A45-2BF0-A6ABFB4A3DDB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\Concrete Footsteps\concrete-footsteps-4		19360
 

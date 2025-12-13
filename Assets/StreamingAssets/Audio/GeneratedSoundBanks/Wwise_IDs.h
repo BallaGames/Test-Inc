@@ -13,8 +13,9 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID FOOTSTEP = 1866025847U;
+        static const AkUniqueID CONCRETE_FOOTSTEP = 2496988773U;
         static const AkUniqueID INTERACT_FAILED = 3262347973U;
+        static const AkUniqueID LADDER_FOOTSTEP = 1926856618U;
     } // namespace EVENTS
 
     namespace GAME_PARAMETERS

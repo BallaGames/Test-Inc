@@ -29,6 +29,13 @@ public class PlayerAudio : MonoBehaviour
     }
     public void PlayFootstep()
     {
+        //-----TO BE UPDATED-----
+        //-Will include a switch to check the ground type- 
+        //-Will play the appropriate footstep sound to that ground type-
+
+        //-PREREQUESITES:-
+        //-Need a ground checker on the player
+        //-Need a list of ground states to pull from
         footstep.Post(gameObject);
     }
 }
