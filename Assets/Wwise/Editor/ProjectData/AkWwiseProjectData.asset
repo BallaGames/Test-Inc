@@ -38,7 +38,7 @@ MonoBehaviour:
     ParentPath: Master-Mixer Hierarchy\Default Work Unit
     guid: 6e4a118e53835348b23141abede7fc1d
     GuidInternal: 
-    m_lastTime: -8584361268871990746
+    m_lastTime: -8584358779043085523
     List:
     - name: Master Audio Bus
       guid: d8a41415a61d2a41a17e75ca0c2149f3
@@ -101,7 +101,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: 26e7d6d711fbd248a0f25e1545d880f7
     GuidInternal: 
-    m_lastTime: -8584359698803312652
+    m_lastTime: -8584358779042236165
     List:
     - name: SFX
       guid: dc71faa15ef85f4b9bc3743906b02a48
@@ -129,7 +129,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 25fdaa236387564f9cca78221b205973
     GuidInternal: 
-    m_lastTime: -8584359698887176510
+    m_lastTime: -8584358779044361088
     List:
     - name: concrete_footstep
       guid: f7627510236b8045a92de4221118952f
@@ -149,8 +149,8 @@ MonoBehaviour:
         guid: f7627510236b8045a92de4221118952f
       Path: Events\Default Work Unit\Footstep Events\concrete_footstep
       maxAttenuation: 0
-      maxDuration: 0.26125303
-      minDuration: 0.11440625
+      maxDuration: -1
+      minDuration: -1
     - name: Footstep Events
       guid: 555c8ce96f27fc459cbd0c00232a3b2a
       id: 3112721182
@@ -183,8 +183,8 @@ MonoBehaviour:
         guid: cd021d265b9c404eaccb5fbbc0497b7a
       Path: Events\Default Work Unit\interact_failed
       maxAttenuation: 0
-      maxDuration: 0.58676004
-      minDuration: 0.46571174
+      maxDuration: -1
+      minDuration: -1
     - name: ladder_footstep
       guid: 7338dfa366193d4fa15ad54b586ecd57
       id: 1926856618
@@ -203,8 +203,8 @@ MonoBehaviour:
         guid: 7338dfa366193d4fa15ad54b586ecd57
       Path: Events\Default Work Unit\Footstep Events\ladder_footstep
       maxAttenuation: 0
-      maxDuration: 0.16603084
-      minDuration: 0.10980327
+      maxDuration: -1
+      minDuration: -1
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:
@@ -217,7 +217,7 @@ MonoBehaviour:
     ParentPath: Game Parameters\Default Work Unit
     guid: 5777c98e4319ba4f866814069168de19
     GuidInternal: 
-    m_lastTime: -8584361268871874062
+    m_lastTime: -8584358779044225174
     List:
     - name: Master_Audio
       guid: 09c3e46561b8f34988da30223b42c7d4
