@@ -17,10 +17,14 @@ using UnityEngine.Events;
 /// Since the Interaction system relies on raycasts to detect them, 
 /// </summary>
 [DisallowMultipleComponent, RequireComponent(typeof(Rigidbody))]
-public class Interactable : BallaNetScript
+public class Interactable : Triggerable
 {
     public NetworkVariable<bool> isInteractable = new();
     public NetworkVariable<bool> Interacting = new();
+
+
+    public bool resetTriggerOnEnd;
+    public bool toggleTrigger;
 
     public UnityEvent u_OnInteractStart, u_OnInteractEnd, u_OnInteract;
     public Action e_OnInteractStart, e_OnInteractCanel, e_OnInteract;
@@ -75,6 +79,10 @@ public class Interactable : BallaNetScript
     {
         u_OnInteractEnd?.Invoke();
         e_OnInteractCanel?.Invoke();
+        if (!toggleTrigger && triggered.Value)
+        {
+            ResetTrigger();
+        }
     }
     /// <summary>
     /// Called when either:<br></br>
@@ -85,5 +93,16 @@ public class Interactable : BallaNetScript
     {
         u_OnInteract?.Invoke();
         e_OnInteract?.Invoke();
+        if (toggleTrigger)
+        {
+            if (triggered.Value)
+                ResetTrigger();
+            else
+                SetTrigger();
+        }
+        else
+        {
+            SetTrigger();
+        }
     }
 }
