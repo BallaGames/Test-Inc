@@ -11,37 +11,55 @@ public class Triggerable : BallaNetScript
 
     public Action<Triggerable> TriggerSet, TriggerReset;
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        triggered.OnValueChanged += TriggerValueChanged;
+        TriggerValueChanged(false, triggered.Value);
+    }
+
+    protected virtual void TriggerValueChanged(bool previous, bool current)
+    {
+        if(!previous && current)
+        {
+            TriggerTrue();
+            return;
+        }
+        if(previous && !current)
+        {
+            TriggerFalse();
+            return;
+        }
+    }
+
     public void SetTrigger()
     {
-        SendTrigger_RPC();
-    }
-    [Rpc(SendTo.Everyone, DeferLocal = true)]
-    public void SendTrigger_RPC()
-    {
-        Debug.Log("send trigger from object", gameObject);
-        TriggerSet?.Invoke(this);
-        PostTriggerSet();
         if (IsServer)
         {
             triggered.Value = true;
         }
     }
-    [Rpc(SendTo.Everyone, DeferLocal = true)]
-    public void ResetTrigger_RPC()
+    public void TriggerTrue()
+    {
+        Debug.Log("send trigger from object", gameObject);
+        TriggerSet?.Invoke(this);
+        PostTriggerSet();
+    }
+    public void TriggerFalse()
     {
         if (onlyTriggerOnce)
             return;
         Debug.Log("reset trigger from object", gameObject);
         TriggerReset?.Invoke(this);
         PostTriggerReset();
+    }
+    public void ResetTrigger()
+    {
         if (IsServer)
         {
             triggered.Value = false;
         }
-    }
-    public void ResetTrigger()
-    {
-        ResetTrigger_RPC();
     }
     protected virtual void PostTriggerSet()
     {
