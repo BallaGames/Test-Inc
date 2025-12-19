@@ -62,13 +62,13 @@ public class PlayerController : BallaNetScript
         {
             Debug.LogWarning($"TICKET INVALID! REASON : {Enum.GetName(typeof(EAuthSessionResponse), session.Response)}");
             SteamLobbyHelper.currentLobby.KickMember(session.User);
-            DenyAuthentication_RPC();
+            DenyAuthentication_RPC(session);
         }
     }
     [Rpc(SendTo.Owner)]
-    public void DenyAuthentication_RPC()
+    public void DenyAuthentication_RPC(AuthenticationSession session)
     {
-        Debug.LogWarning("Auth denied by server.");
+        Debug.LogWarning($"Auth denied by server. reason: {session.Response}");
         SteamLobbyHelper.Instance.LeftLobby(null);
     }
 }

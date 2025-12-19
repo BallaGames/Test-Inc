@@ -9,7 +9,8 @@ public class DefaultSpawns : BallaNetScript
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-
+        if (!IsServer)
+            return;
         for (int i = 0; i < transforms.Length; i++)
         {
             _ = NetworkManager.SpawnManager.InstantiateAndSpawn(objectToSpawn, position: transforms[i].position, rotation: transforms[i].rotation);
