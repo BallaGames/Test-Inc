@@ -19,7 +19,8 @@ public class PlayerController : BallaNetScript
         //We need to verify this user with the server.
         if (IsOwner)
         {
-            Authentication.GetAuthSessionTicket(LocalSteamData.UserData, GetAuthTicket);
+            CSteamID hostID = new(TransportSelector.Instance.steamTransport.ConnectToSteamID);
+            Authentication.GetAuthSessionTicket(hostID, GetAuthTicket);
         }
     }
     void GetAuthTicket(AuthenticationTicket ticket, bool ioError)
@@ -40,7 +41,10 @@ public class PlayerController : BallaNetScript
         }
         else
         {
-            Authentication.EndAuthSession(clientSteamIDs[OwnerClientId]);
+            if (clientSteamIDs.ContainsKey(OwnerClientId))
+            {
+                Authentication.EndAuthSession(clientSteamIDs[OwnerClientId]);
+            }
             Authentication.CancelAuthTicket(ticket);
             ticket = null;
         }
