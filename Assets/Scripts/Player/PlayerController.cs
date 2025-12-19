@@ -6,13 +6,14 @@ using Heathen.SteamworksIntegration;
 using Heathen.SteamworksIntegration.API;
 using System;
 using System.Linq;
+using Balla;
 
 public class PlayerController : BallaNetScript
 {
     public static NetworkDictionary<ulong, ulong> clientSteamIDs = new();
     [SerializeField] protected NetworkObject playerPrefab;
     AuthenticationTicket ticket;
-    
+    [SerializeField, ReadOnly] protected NetworkObject playerBody;
     public override void OnNetworkSpawn()
     {
         //We need to verify this user with the server.
@@ -43,6 +44,10 @@ public class PlayerController : BallaNetScript
             Authentication.CancelAuthTicket(ticket);
             ticket = null;
         }
+        if(playerBody != null && IsServer)
+        {
+            playerBody.Despawn(true);
+        }
     }
     [Rpc(SendTo.Server)]
     void SendAuthTicket_RPC(byte[] ticketData, ulong steamID)
@@ -56,7 +61,7 @@ public class PlayerController : BallaNetScript
         {
             Debug.Log("Spawning player following successful authentication");
             clientSteamIDs.Add(OwnerClientId, session.User);
-            NetworkManager.SpawnManager.InstantiateAndSpawn(playerPrefab, OwnerClientId);
+            playerBody = NetworkManager.SpawnManager.InstantiateAndSpawn(playerPrefab, OwnerClientId);
         }
         else
         {
